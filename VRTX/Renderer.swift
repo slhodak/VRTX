@@ -55,7 +55,7 @@ class Renderer: NSObject, MTKViewDelegate {
 
         vertexDescriptor.layouts[0].stride = MemoryLayout<Vertex>.stride
         
-        let aspect = Float(view.bounds.width / view.bounds.size.height)
+//        let aspect = Float(view.bounds.width / view.bounds.size.height)
 //        projectionMatrix = makePerspectiveMatrix(fovyRadians: Float.pi / 4,
 //                                                 aspect: aspect,
 //                                                 nearZ: Float(0.1),
@@ -122,7 +122,7 @@ class Renderer: NSObject, MTKViewDelegate {
         let p23: Float = -1
         let p32 = wzScale
         
-        var mat = matrix_float4x4(columns: (
+        let mat = matrix_float4x4(columns: (
             vector_float4(p00, 0, 0, 0),
             vector_float4(0, p11, 0, 0),
             vector_float4(0, 0, p22, p23),

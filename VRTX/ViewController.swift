@@ -19,7 +19,7 @@ class ViewController: NSViewController {
     
     func setupInputsView(renderer: Renderer) {
         inputsViewController = InputsViewController(renderer: renderer)
-        var inputsView = inputsViewController.view
+        let inputsView = inputsViewController.view
         inputsView.translatesAutoresizingMaskIntoConstraints = false
         inputsView.wantsLayer = true  // Make the container view layer-backed
         inputsView.layer?.backgroundColor = NSColor.white.cgColor  // Set background color to white

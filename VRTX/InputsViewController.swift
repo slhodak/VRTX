@@ -35,40 +35,11 @@ class InputsViewController: NSViewController {
         for i in 0..<3 {
             // Create one slider each for x, y, and z
             for j in 0..<3 {
-                let label = NSTextField(labelWithString: "Vertex \(i+1) \(coordinates[j])")
-                label.translatesAutoresizingMaskIntoConstraints = false
-                view.addSubview(label)
-                
-                NSLayoutConstraint.activate([
-                    label.topAnchor.constraint(equalTo: topConstraint, constant: 20),
-                    label.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-                    label.widthAnchor.constraint(equalToConstant: 62)
-                ])
-                
-                let slider = NSSlider(value: 0.0, minValue: 0.0, maxValue: 10.0, target: self, action: #selector(sliderValueChanged(_:)))
-                slider.tag = i * 3 + j // Use tag to identify the slider
-                slider.translatesAutoresizingMaskIntoConstraints = false
-                view.addSubview(slider)
-                sliders.append(slider)
-                
-                NSLayoutConstraint.activate([
-                    slider.topAnchor.constraint(equalTo: label.topAnchor),
-                    slider.leadingAnchor.constraint(equalTo: label.trailingAnchor, constant: 5),
-                    slider.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40)
-                ])
-                
-                let sliderValueLabel = NSTextField(labelWithString: "0")
-                sliderValueLabel.translatesAutoresizingMaskIntoConstraints = false
-                view.addSubview(sliderValueLabel)
-                sliderValuelabels.append(sliderValueLabel)
-                
-                NSLayoutConstraint.activate([
-                    sliderValueLabel.topAnchor.constraint(equalTo: slider.topAnchor),
-                    sliderValueLabel.leadingAnchor.constraint(equalTo: slider.trailingAnchor, constant: 5),
-                    sliderValueLabel.widthAnchor.constraint(equalToConstant: 62)
-                ])
-                
-                topConstraint = slider.bottomAnchor
+                let bottomAnchor = createLabeledSlider(index: i,
+                                                       jindex: j,
+                                                       axisLabel: coordinates[j],
+                                                       topConstraint: topConstraint)
+                topConstraint = bottomAnchor
             }
         }
         
@@ -83,10 +54,46 @@ class InputsViewController: NSViewController {
         ])
     }
     
+    func createLabeledSlider(index i: Int, jindex j: Int, axisLabel: String, topConstraint: NSLayoutYAxisAnchor) -> NSLayoutYAxisAnchor {
+        let label = NSTextField(labelWithString: "Vertex \(i+1) \(axisLabel)")
+        label.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(label)
+        
+        NSLayoutConstraint.activate([
+            label.topAnchor.constraint(equalTo: topConstraint, constant: 20),
+            label.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            label.widthAnchor.constraint(equalToConstant: 62)
+        ])
+        
+        let slider = NSSlider(value: 0.0, minValue: 0.0, maxValue: 10.0, target: self, action: #selector(sliderValueChanged(_:)))
+        slider.tag = i * 3 + j // Use tag to identify the slider
+        slider.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(slider)
+        sliders.append(slider)
+        
+        NSLayoutConstraint.activate([
+            slider.topAnchor.constraint(equalTo: label.topAnchor),
+            slider.leadingAnchor.constraint(equalTo: label.trailingAnchor, constant: 5),
+            slider.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40)
+        ])
+        
+        let sliderValueLabel = NSTextField(labelWithString: "0")
+        sliderValueLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(sliderValueLabel)
+        sliderValuelabels.append(sliderValueLabel)
+        
+        NSLayoutConstraint.activate([
+            sliderValueLabel.topAnchor.constraint(equalTo: slider.topAnchor),
+            sliderValueLabel.leadingAnchor.constraint(equalTo: slider.trailingAnchor, constant: 5),
+            sliderValueLabel.widthAnchor.constraint(equalToConstant: 62)
+        ])
+        
+        return slider.bottomAnchor
+    }
+    
     @objc func sliderValueChanged(_ sender: NSSlider) {
-        // This function will now only record changes, not apply them immediately
-        print("Slider \(sender.tag) value changed to \(sender.doubleValue)")
-        sliderValuelabels[sender.tag].stringValue = String(sender.doubleValue)
+        sender.floatValue = sender.floatValue.rounded(to: 2)
+        sliderValuelabels[sender.tag].stringValue = String(sender.floatValue)
     }
     
     @objc func redrawPressed() {
@@ -101,5 +108,12 @@ class InputsViewController: NSViewController {
         
         renderer.updateVertexBuffer(with: vertexData)
         renderer.view.setNeedsDisplay(renderer.view.bounds) // Request redraw
+    }
+}
+
+extension Float {
+    func rounded(to places: Int) -> Float {
+        let divisor = pow(10.0, Float(places))
+        return (self * divisor).rounded() / divisor
     }
 }
