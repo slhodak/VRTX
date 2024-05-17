@@ -10,15 +10,24 @@ class Renderer: NSObject, MTKViewDelegate {
     var device: MTLDevice!
     var commandQueue: MTLCommandQueue!
     var pipelineState: MTLRenderPipelineState!
-    var usePerspectiveProjection: Bool = false
     var vertexData: [Vertex] = [
         Vertex(position: [0.0, 0.0, 0.0, 1.0]),
         Vertex(position: [0.4, 0.0, 0.0, 1.0]),
         Vertex(position: [0.4, 0.0, 0.0, 1.0])
     ]
     var vertexBuffer: MTLBuffer!
+    
     var projectionMatrix: matrix_float4x4!
     var projectionMatrixBuffer: MTLBuffer?
+    var projectionPerspectiveAspect: Float!
+    var usePerspectiveProjection: Bool = false
+    var perspectiveFovyRadians: Float = Float.pi / 4
+    var orthographicLeft: Float = 0
+    var orthographicRight: Float = 0
+    var orthographicTop: Float = 0
+    var orthographicBottom: Float = 0
+    var projectionNearZ: Float = 0.1
+    var projectionFarZ: Float = 100.0
     
     init?(metalView: MTKView) {
         guard let device = MTLCreateSystemDefaultDevice(),
@@ -31,6 +40,7 @@ class Renderer: NSObject, MTKViewDelegate {
         self.commandQueue = queue
         super.init()
         
+        self.projectionPerspectiveAspect = Float(view.bounds.width / view.bounds.size.height)
         metalView.device = device
         metalView.delegate = self
         
@@ -57,13 +67,17 @@ class Renderer: NSObject, MTKViewDelegate {
         vertexDescriptor.layouts[0].stride = MemoryLayout<Vertex>.stride
         
         if usePerspectiveProjection {
-            let aspect = Float(view.bounds.width / view.bounds.size.height)
             projectionMatrix = makePerspectiveMatrix(fovyRadians: Float.pi / 4,
-                                                     aspect: aspect,
-                                                     nearZ: Float(0.1),
-                                                     farZ: Float(100.0))
+                                                     aspect: projectionPerspectiveAspect,
+                                                     nearZ: projectionNearZ,
+                                                     farZ: projectionFarZ)
         } else {
-            projectionMatrix = makeOrthographicMatrix(left: 0, right: 100, bottom: 100, top: 0, nearZ: 0.1, farZ: 100.0)
+            projectionMatrix = makeOrthographicMatrix(left: orthographicLeft,
+                                                      right: orthographicRight,
+                                                      bottom: orthographicBottom,
+                                                      top: orthographicTop,
+                                                      nearZ: projectionNearZ,
+                                                      farZ: projectionFarZ)
         }
         
         projectionMatrixBuffer = device.makeBuffer(bytes: &projectionMatrix,length: MemoryLayout<matrix_float4x4>.stride, options: .storageModeShared)
