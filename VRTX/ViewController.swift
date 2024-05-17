@@ -13,13 +13,6 @@ class ViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if let window = view.window {
-            let screenSize = window.screen?.frame.size ?? CGSize(width: 800, height: 400)
-            let windowWidth = screenSize.width * 0.5 // Use 50% of screen width
-            let windowHeight = windowWidth * 0.5 // Maintain 2:1 ratio
-            window.setFrame(CGRect(x: 0, y: 0, width: windowWidth, height: windowHeight), display: true)
-        }
-        
         if let metalView = view as? MTKView {
             renderer = Renderer(metalView: metalView)
             setupUI()
@@ -27,6 +20,7 @@ class ViewController: NSViewController {
     }
     
     func setupUI() {
+        print(view.bounds.size)
         uiContainerView = NSView()
         uiContainerView.translatesAutoresizingMaskIntoConstraints = false
         uiContainerView.wantsLayer = true  // Make the container view layer-backed
@@ -85,15 +79,15 @@ class ViewController: NSViewController {
                 topConstraint = slider.bottomAnchor
             }
         }
-
+        
         // Create a button to apply changes and redraw
         redrawButton = NSButton(title: "Redraw", target: self, action: #selector(redrawPressed))
         redrawButton.translatesAutoresizingMaskIntoConstraints = false
         uiContainerView.addSubview(redrawButton)
         
         NSLayoutConstraint.activate([
-            redrawButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            redrawButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20)
+            redrawButton.centerXAnchor.constraint(equalTo: uiContainerView.centerXAnchor),
+            redrawButton.bottomAnchor.constraint(equalTo: uiContainerView.bottomAnchor, constant: -20)
         ])
     }
     
@@ -136,7 +130,6 @@ class Renderer: NSObject, MTKViewDelegate {
     var vertexBuffer: MTLBuffer!
     var projectionMatrix: matrix_float4x4!
     var projectionMatrixBuffer: MTLBuffer?
-    
     
     init?(metalView: MTKView) {
         guard let device = MTLCreateSystemDefaultDevice(),
