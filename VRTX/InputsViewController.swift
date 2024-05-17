@@ -18,16 +18,22 @@ enum ProjectionSlider: String {
 }
 
 protocol LabeledSliderDelegate: AnyObject {
-    func labeledSliderValueChanged(name: String, value: Float)
+    func vertexSliderValueChanged(name: String, value: Float)
+    func projectionSliderValueChanged(name: String, value: Float)
 }
 
 class LabeledSlider {
     /// Initialize everything to empty here because we need to use self in the setup function, but cannot use it in init()
     var name = ""
+    var type: SliderGroup
     var label = NSTextField()
     var slider = NSSlider()
     var valueLabel = NSTextField()
     var delegate: LabeledSliderDelegate?
+    
+    init(type: SliderGroup) {
+        self.type = type
+    }
     
     func setup(view: NSView, topAnchor: NSLayoutYAxisAnchor, name: String, value: Double, minValue: Double, maxValue: Double) {
         self.name = name
@@ -64,7 +70,12 @@ class LabeledSlider {
     
     @objc func valueChanged(_ sender: NSSlider) {
         let value = sender.floatValue.rounded(to: 2)
-        delegate?.labeledSliderValueChanged(name: name, value: value)
+        switch self.type {
+        case .vertexPosition:
+            delegate?.vertexSliderValueChanged(name: name, value: value)
+        case .projectionMatrix:
+            delegate?.projectionSliderValueChanged(name: name, value: value)
+        }
     }
 }
 
@@ -94,8 +105,12 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
         fatalError("init(nibName:bundle:) has not been implemented")
     }
     
-    func labeledSliderValueChanged(name: String, value: Float) {
+    func vertexSliderValueChanged(name: String, value: Float) {
         labeledSliders[.vertexPosition]?[name]?.valueLabel.stringValue = String(value)
+    }
+    
+    func projectionSliderValueChanged(name: String, value: Float) {
+        labeledSliders[.projectionMatrix]?[name]?.valueLabel.stringValue = String(value)
     }
     
     override func viewDidLoad() {
@@ -104,7 +119,7 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
         var topAnchor = view.topAnchor
         topAnchor = setupVertexInputs(topAnchor: topAnchor)
         topAnchor = setupToggleSwitch(topAnchor: topAnchor)
-//        topAnchor = setupProjectionMatrixInputs(topAnchor: topAnchor)
+        topAnchor = setupProjectionMatrixInputs(topAnchor: topAnchor)
         _ = setupRedrawButton(topAnchor: topAnchor)
     }
     
@@ -121,7 +136,7 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
             for axisLabel in axisLabels {
                 let name = "\(vertexName)_\(axisLabel)"
                 // get a unique tag int...
-                let labeledSlider = LabeledSlider()
+                let labeledSlider = LabeledSlider(type: .vertexPosition)
                 labeledSlider.setup(view: view,
                                     topAnchor: lastTopAnchor,
                                     name: name,
@@ -138,14 +153,34 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
         return lastTopAnchor
     }
     
-//    func setupProjectionMatrixInputs(topAnchor: NSLayoutYAxisAnchor) -> NSLayoutYAxisAnchor {
-//        var bottomAnchor = addLabeledSlider(label: "Ortho Left", tag: 200, topAnchor: topAnchor)
-//        bottomAnchor = addLabeledSlider(label: "Ortho Right", tag: 201, topAnchor: bottomAnchor)
-//        bottomAnchor = addLabeledSlider(label: "Ortho Top", tag: 201, topAnchor: bottomAnchor)
-//        bottomAnchor = addLabeledSlider(label: "Ortho Bottom", tag: 201, topAnchor: bottomAnchor)
-//        bottomAnchor = addLabeledSlider(label: "Ortho Right", tag: 201, topAnchor: bottomAnchor)
-//        return bottomAnchor
-//    }
+    func setupProjectionMatrixInputs(topAnchor: NSLayoutYAxisAnchor) -> NSLayoutYAxisAnchor {
+        if labeledSliders[.projectionMatrix] == nil {
+            labeledSliders[.projectionMatrix] = [:]
+        }
+        
+        var bottomAnchor = addProjectionMatrixSlider(name: "ortho_left", topAnchor: topAnchor)
+        bottomAnchor = addProjectionMatrixSlider(name: "ortho_right", topAnchor: bottomAnchor)
+        bottomAnchor = addProjectionMatrixSlider(name: "ortho_top", topAnchor: bottomAnchor)
+        bottomAnchor = addProjectionMatrixSlider(name: "ortho_bottom", topAnchor: bottomAnchor)
+        bottomAnchor = addProjectionMatrixSlider(name: "near_z", topAnchor: bottomAnchor)
+        bottomAnchor = addProjectionMatrixSlider(name: "far_z", topAnchor: bottomAnchor)
+        
+        return bottomAnchor
+    }
+    
+    func addProjectionMatrixSlider(name: String, topAnchor: NSLayoutYAxisAnchor) -> NSLayoutYAxisAnchor {
+        let labeledSlider = LabeledSlider(type: .projectionMatrix)
+        labeledSlider.setup(view: view,
+                            topAnchor: topAnchor,
+                            name: name,
+                            value: 0.0,
+                            minValue: 0.0,
+                            maxValue: 100.0)
+        labeledSlider.delegate = self
+        labeledSliders[.projectionMatrix]![name] = labeledSlider
+        
+        return labeledSlider.slider.bottomAnchor
+    }
     
     func setupToggleSwitch(topAnchor: NSLayoutYAxisAnchor) -> NSLayoutYAxisAnchor {
         projectionMatrixSwitch = NSSwitch(frame: NSRect(x: 20, y: 20, width: 40, height: 20))
@@ -184,7 +219,10 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
         /// Collect values from all inputs and use them to update the renderer, then redraw the rendering
         
         /// Collect vertex data from vertex sliders
-        guard let vertexPositionSliders = labeledSliders[.vertexPosition] else { return }
+        guard let vertexPositionSliders = labeledSliders[.vertexPosition],
+              let projectionMatrixSliders = labeledSliders[.projectionMatrix] else {
+            return
+        }
         
         let vertices: [String: Vertex] = [
             "A": Vertex(position: vector_float4()),
@@ -214,7 +252,26 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
         renderer.updateVertexBuffer(with: Array(vertices.values))
         
         /// Collect projection matrix data from projection matrix sliders
-        
+        for (name, labeledSlider) in projectionMatrixSliders {
+            if name == "ortho_Left" {
+                renderer.orthographicLeft = labeledSlider.slider.floatValue
+            }
+            if name == "orthog_right" {
+                renderer.orthographicRight = labeledSlider.slider.floatValue
+            }
+            if name == "ortho_top" {
+                renderer.orthographicTop = labeledSlider.slider.floatValue
+            }
+            if name == "ortho_bottom" {
+                renderer.orthographicBottom = labeledSlider.slider.floatValue
+            }
+            if name == "near_z" {
+                renderer.projectionNearZ = labeledSlider.slider.floatValue
+            }
+            if name == "far_z" {
+                renderer.projectionFarZ = labeledSlider.slider.floatValue
+            }
+        }
         
         renderer.view.setNeedsDisplay(renderer.view.bounds) // Request redraw
     }
