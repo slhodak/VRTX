@@ -11,9 +11,9 @@ class Renderer: NSObject, MTKViewDelegate {
     var commandQueue: MTLCommandQueue!
     var pipelineState: MTLRenderPipelineState!
     var vertexData: [Vertex] = [
-        Vertex(position: [0.0, 0.0, 0.0, 1.0]),
-        Vertex(position: [0.4, 0.0, 0.0, 1.0]),
-        Vertex(position: [0.4, 0.0, 0.0, 1.0])
+        Vertex(position: [0.1, 0.0, 0.0, 1.0]),
+        Vertex(position: [0.5, 0.5, 0.0, 1.0]),
+        Vertex(position: [-1.0, 1.0, 0.0, 1.0])
     ]
     var vertexBuffer: MTLBuffer!
     
@@ -21,6 +21,7 @@ class Renderer: NSObject, MTKViewDelegate {
     var projectionMatrixBuffer: MTLBuffer?
     var projectionPerspectiveAspect: Float!
     var usePerspectiveProjection: Bool = false
+    var useProjection: Bool = false
     var perspectiveFovyRadians: Float = Float.pi / 4
     var orthographicLeft: Float = 0
     var orthographicRight: Float = 0
@@ -65,19 +66,23 @@ class Renderer: NSObject, MTKViewDelegate {
         vertexDescriptor.attributes[0].bufferIndex = 0
 
         vertexDescriptor.layouts[0].stride = MemoryLayout<Vertex>.stride
-        
-        if usePerspectiveProjection {
-            projectionMatrix = makePerspectiveMatrix(fovyRadians: Float.pi / 4,
-                                                     aspect: projectionPerspectiveAspect,
-                                                     nearZ: projectionNearZ,
-                                                     farZ: projectionFarZ)
+
+        if useProjection {
+            if usePerspectiveProjection {
+                projectionMatrix = makePerspectiveMatrix(fovyRadians: perspectiveFovyRadians,
+                                                         aspect: projectionPerspectiveAspect,
+                                                         nearZ: projectionNearZ,
+                                                         farZ: projectionFarZ)
+            } else {
+                projectionMatrix = makeOrthographicMatrix(left: orthographicLeft,
+                                                          right: orthographicRight,
+                                                          bottom: orthographicBottom,
+                                                          top: orthographicTop,
+                                                          nearZ: projectionNearZ,
+                                                          farZ: projectionFarZ)
+            }
         } else {
-            projectionMatrix = makeOrthographicMatrix(left: orthographicLeft,
-                                                      right: orthographicRight,
-                                                      bottom: orthographicBottom,
-                                                      top: orthographicTop,
-                                                      nearZ: projectionNearZ,
-                                                      farZ: projectionFarZ)
+            projectionMatrix = matrix_identity_float4x4
         }
         
         projectionMatrixBuffer = device.makeBuffer(bytes: &projectionMatrix,length: MemoryLayout<matrix_float4x4>.stride, options: .storageModeShared)
@@ -168,7 +173,4 @@ class Renderer: NSObject, MTKViewDelegate {
         )
         return P
     }
-    
-    
-
 }

@@ -90,6 +90,7 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
     var labeledSliders: [SliderGroup: [String: LabeledSlider]] = [:]
     var redrawButton: NSButton!
     var projectionMatrixSwitch: NSSwitch!
+    var projectionMatrixTypeSwitch: NSSwitch!
     
     init(renderer: Renderer) {
         self.renderer = renderer
@@ -107,10 +108,12 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
     
     func vertexSliderValueChanged(name: String, value: Float) {
         labeledSliders[.vertexPosition]?[name]?.valueLabel.stringValue = String(value)
+        redrawWithCurrentValues()
     }
     
     func projectionSliderValueChanged(name: String, value: Float) {
         labeledSliders[.projectionMatrix]?[name]?.valueLabel.stringValue = String(value)
+        redrawWithCurrentValues()
     }
     
     override func viewDidLoad() {
@@ -118,7 +121,8 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
         
         var topAnchor = view.topAnchor
         topAnchor = setupVertexInputs(topAnchor: topAnchor)
-        topAnchor = setupToggleSwitch(topAnchor: topAnchor)
+        topAnchor = setupLabeledSwitch(name: "Projection", topAnchor: topAnchor, action: #selector(toggleProjectionSwitch(_:)))
+        topAnchor = setupLabeledSwitch(name: "Ortho/Persp", topAnchor: topAnchor, action: #selector(toggleProjectionTypeSwitch(_:)))
         topAnchor = setupProjectionMatrixInputs(topAnchor: topAnchor)
         _ = setupRedrawButton(topAnchor: topAnchor)
     }
@@ -141,8 +145,8 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
                                     topAnchor: lastTopAnchor,
                                     name: name,
                                     value: 0.0,
-                                    minValue: 0.0,
-                                    maxValue: 100.0)
+                                    minValue: -1.0,
+                                    maxValue: 1.0)
                 
                 labeledSlider.delegate = self
                 labeledSliders[.vertexPosition]![name] = labeledSlider
@@ -182,28 +186,44 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
         return labeledSlider.slider.bottomAnchor
     }
     
-    func setupToggleSwitch(topAnchor: NSLayoutYAxisAnchor) -> NSLayoutYAxisAnchor {
+    func setupLabeledSwitch(name: String, topAnchor: NSLayoutYAxisAnchor, action: Selector) -> NSLayoutYAxisAnchor {
+        let label = NSTextField(labelWithString: name)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(label)
+        
+        NSLayoutConstraint.activate([
+            label.topAnchor.constraint(equalTo: topAnchor, constant: 20),
+            label.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            label.widthAnchor.constraint(equalToConstant: 100)
+        ])
+        
         projectionMatrixSwitch = NSSwitch(frame: NSRect(x: 20, y: 20, width: 40, height: 20))
         projectionMatrixSwitch.target = self
-        projectionMatrixSwitch.action = #selector(toggleSwitch(_:))
+        projectionMatrixSwitch.action = action
         view.addSubview(projectionMatrixSwitch)
         projectionMatrixSwitch.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            projectionMatrixSwitch.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            projectionMatrixSwitch.topAnchor.constraint(equalTo: topAnchor)
+            projectionMatrixSwitch.topAnchor.constraint(equalTo: topAnchor, constant: 20),
+            projectionMatrixSwitch.centerXAnchor.constraint(equalTo: label.trailingAnchor),
         ])
         
         return projectionMatrixSwitch.bottomAnchor
     }
     
-    @objc func toggleSwitch(_ sender: NSSwitch) {
+    @objc func toggleProjectionSwitch(_ sender: NSSwitch) {
+        renderer.useProjection = sender.state == .on
+        redrawWithCurrentValues()
+    }
+    
+    @objc func toggleProjectionTypeSwitch(_ sender: NSSwitch) {
         renderer.usePerspectiveProjection = sender.state == .on
+        redrawWithCurrentValues()
     }
     
     func setupRedrawButton(topAnchor: NSLayoutYAxisAnchor) -> NSLayoutYAxisAnchor {
         // Create a button to apply changes and redraw
-        redrawButton = NSButton(title: "Redraw", target: self, action: #selector(redrawPressed))
+        redrawButton = NSButton(title: "Redraw", target: self, action: #selector(redrawWithCurrentValues))
         redrawButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(redrawButton)
         
@@ -215,7 +235,7 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
         return redrawButton.bottomAnchor
     }
     
-    @objc func redrawPressed() {
+    @objc func redrawWithCurrentValues() {
         /// Collect values from all inputs and use them to update the renderer, then redraw the rendering
         
         /// Collect vertex data from vertex sliders
