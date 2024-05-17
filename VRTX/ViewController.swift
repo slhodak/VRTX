@@ -5,6 +5,7 @@ import Metal
 class ViewController: NSViewController {
     var renderer: Renderer?
     var sliders: [NSSlider] = []
+    var sliderValuelabels: [NSTextField] = []
     var labels: [NSTextField] = []
     var redrawButton: NSButton!
     var metalView: MTKView!
@@ -20,7 +21,6 @@ class ViewController: NSViewController {
     }
     
     func setupUI() {
-        print(view.bounds.size)
         uiContainerView = NSView()
         uiContainerView.translatesAutoresizingMaskIntoConstraints = false
         uiContainerView.wantsLayer = true  // Make the container view layer-backed
@@ -73,7 +73,18 @@ class ViewController: NSViewController {
                 NSLayoutConstraint.activate([
                     slider.topAnchor.constraint(equalTo: label.topAnchor),
                     slider.leadingAnchor.constraint(equalTo: label.trailingAnchor, constant: 5),
-                    slider.trailingAnchor.constraint(equalTo: uiContainerView.trailingAnchor, constant: -20)
+                    slider.trailingAnchor.constraint(equalTo: uiContainerView.trailingAnchor, constant: -40)
+                ])
+                
+                let sliderValueLabel = NSTextField(labelWithString: "0")
+                sliderValueLabel.translatesAutoresizingMaskIntoConstraints = false
+                uiContainerView.addSubview(sliderValueLabel)
+                sliderValuelabels.append(sliderValueLabel)
+                
+                NSLayoutConstraint.activate([
+                    sliderValueLabel.topAnchor.constraint(equalTo: slider.topAnchor),
+                    sliderValueLabel.leadingAnchor.constraint(equalTo: slider.trailingAnchor, constant: 5),
+                    sliderValueLabel.widthAnchor.constraint(equalToConstant: 62)
                 ])
                 
                 topConstraint = slider.bottomAnchor
@@ -94,6 +105,7 @@ class ViewController: NSViewController {
     @objc func sliderValueChanged(_ sender: NSSlider) {
         // This function will now only record changes, not apply them immediately
         print("Slider \(sender.tag) value changed to \(sender.doubleValue)")
+        sliderValuelabels[sender.tag].stringValue = String(sender.doubleValue)
     }
     
     @objc func redrawPressed() {
