@@ -14,6 +14,7 @@
 		17E962DD2BF6E43300F0A227 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 17E962DC2BF6E43300F0A227 /* Shaders.metal */; };
 		17E962DF2BF7BF5800F0A227 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17E962DE2BF7BF5800F0A227 /* Renderer.swift */; };
 		17E962E12BF7BFA500F0A227 /* InputsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17E962E02BF7BFA500F0A227 /* InputsViewController.swift */; };
+		17E962E42BF7D0DD00F0A227 /* Float.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17E962E32BF7D0DD00F0A227 /* Float.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		17E962DC2BF6E43300F0A227 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		17E962DE2BF7BF5800F0A227 /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
 		17E962E02BF7BFA500F0A227 /* InputsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputsViewController.swift; sourceTree = "<group>"; };
+		17E962E32BF7D0DD00F0A227 /* Float.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Float.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,6 +63,7 @@
 		17E962C72BF6D87E00F0A227 /* VRTX */ = {
 			isa = PBXGroup;
 			children = (
+				17E962E22BF7D0D100F0A227 /* Extension */,
 				17E962C82BF6D87E00F0A227 /* AppDelegate.swift */,
 				17E962E02BF7BFA500F0A227 /* InputsViewController.swift */,
 				17E962DE2BF7BF5800F0A227 /* Renderer.swift */,
@@ -80,6 +83,14 @@
 				17E962D82BF6E22800F0A227 /* Metal.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		17E962E22BF7D0D100F0A227 /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				17E962E32BF7D0DD00F0A227 /* Float.swift */,
+			);
+			path = Extension;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -154,6 +165,7 @@
 			files = (
 				17E962DF2BF7BF5800F0A227 /* Renderer.swift in Sources */,
 				17E962E12BF7BFA500F0A227 /* InputsViewController.swift in Sources */,
+				17E962E42BF7D0DD00F0A227 /* Float.swift in Sources */,
 				17E962CB2BF6D87E00F0A227 /* ViewController.swift in Sources */,
 				17E962DD2BF6E43300F0A227 /* Shaders.metal in Sources */,
 				17E962C92BF6D87E00F0A227 /* AppDelegate.swift in Sources */,

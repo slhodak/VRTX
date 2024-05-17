@@ -10,6 +10,7 @@ class Renderer: NSObject, MTKViewDelegate {
     var device: MTLDevice!
     var commandQueue: MTLCommandQueue!
     var pipelineState: MTLRenderPipelineState!
+    var usePerspectiveProjection: Bool = false
     var vertexData: [Vertex] = [
         Vertex(position: [0.0, 0.0, 0.0, 1.0]),
         Vertex(position: [0.4, 0.0, 0.0, 1.0]),
@@ -55,13 +56,16 @@ class Renderer: NSObject, MTKViewDelegate {
 
         vertexDescriptor.layouts[0].stride = MemoryLayout<Vertex>.stride
         
-//        let aspect = Float(view.bounds.width / view.bounds.size.height)
-//        projectionMatrix = makePerspectiveMatrix(fovyRadians: Float.pi / 4,
-//                                                 aspect: aspect,
-//                                                 nearZ: Float(0.1),
-//                                                 farZ: Float(100.0))
+        if usePerspectiveProjection {
+            let aspect = Float(view.bounds.width / view.bounds.size.height)
+            projectionMatrix = makePerspectiveMatrix(fovyRadians: Float.pi / 4,
+                                                     aspect: aspect,
+                                                     nearZ: Float(0.1),
+                                                     farZ: Float(100.0))
+        } else {
+            projectionMatrix = makeOrthographicMatrix(left: 0, right: 100, bottom: 100, top: 0, nearZ: 0.1, farZ: 100.0)
+        }
         
-        projectionMatrix = makeOrthographicMatrix(left: 0, right: 100, bottom: 100, top: 0, nearZ: 0.1, farZ: 100.0)
         projectionMatrixBuffer = device.makeBuffer(bytes: &projectionMatrix,length: MemoryLayout<matrix_float4x4>.stride, options: .storageModeShared)
         
         /// Load shaders

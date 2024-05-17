@@ -5,6 +5,7 @@ class InputsViewController: NSViewController {
     var sliderValuelabels: [NSTextField] = []
     var labels: [NSTextField] = []
     var redrawButton: NSButton!
+    var projectionMatrixSwitch: NSSwitch!
     let renderer: Renderer
     
     init(renderer: Renderer) {
@@ -24,25 +25,32 @@ class InputsViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setupUI()
+        var topAnchor = view.topAnchor
+        topAnchor = setupVertexInputs(topAnchor: topAnchor)
+        topAnchor = setupToggleSwitch(topAnchor: topAnchor)
+//        _ = setupRedrawButton(topAnchor: topAnchor)
     }
     
-    func setupUI() {
-        let coordinates = ["X", "Y", "Z"]
-        var topConstraint = view.topAnchor
+    func setupToggleSwitch(topAnchor: NSLayoutYAxisAnchor) -> NSLayoutYAxisAnchor {
+        projectionMatrixSwitch = NSSwitch(frame: NSRect(x: 20, y: 20, width: 40, height: 20))
+        projectionMatrixSwitch.target = self
+        projectionMatrixSwitch.action = #selector(toggleSwitch(_:))
+        view.addSubview(projectionMatrixSwitch)
+        projectionMatrixSwitch.translatesAutoresizingMaskIntoConstraints = false
         
-        // Create 3 sliders for each vertex
-        for i in 0..<3 {
-            // Create one slider each for x, y, and z
-            for j in 0..<3 {
-                let bottomAnchor = createLabeledSlider(index: i,
-                                                       jindex: j,
-                                                       axisLabel: coordinates[j],
-                                                       topConstraint: topConstraint)
-                topConstraint = bottomAnchor
-            }
-        }
+        NSLayoutConstraint.activate([
+            projectionMatrixSwitch.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            projectionMatrixSwitch.topAnchor.constraint(equalTo: topAnchor)
+        ])
         
+        return projectionMatrixSwitch.bottomAnchor
+    }
+    
+    @objc func toggleSwitch(_ sender: NSSwitch) {
+        renderer.usePerspectiveProjection = sender.state == .on
+    }
+    
+    func setupRedrawButton(topAnchor: NSLayoutYAxisAnchor) -> NSLayoutYAxisAnchor {
         // Create a button to apply changes and redraw
         redrawButton = NSButton(title: "Redraw", target: self, action: #selector(redrawPressed))
         redrawButton.translatesAutoresizingMaskIntoConstraints = false
@@ -50,17 +58,36 @@ class InputsViewController: NSViewController {
         
         NSLayoutConstraint.activate([
             redrawButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            redrawButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20)
+            redrawButton.topAnchor.constraint(equalTo: topAnchor)
         ])
+        
+        return redrawButton.bottomAnchor
     }
     
-    func createLabeledSlider(index i: Int, jindex j: Int, axisLabel: String, topConstraint: NSLayoutYAxisAnchor) -> NSLayoutYAxisAnchor {
+    func setupVertexInputs(topAnchor: NSLayoutYAxisAnchor) -> NSLayoutYAxisAnchor {
+        let coordinates = ["X", "Y", "Z"]
+        var lastTopAnchor = topAnchor
+        // Create 3 sliders for each vertex
+        for i in 0..<3 {
+            // Create one slider each for x, y, and z
+            for j in 0..<3 {
+                lastTopAnchor = createLabeledSlider(index: i,
+                                                   jindex: j,
+                                                   axisLabel: coordinates[j],
+                                                   topAnchor: lastTopAnchor)
+            }
+        }
+        
+        return lastTopAnchor
+    }
+    
+    func createLabeledSlider(index i: Int, jindex j: Int, axisLabel: String, topAnchor: NSLayoutYAxisAnchor) -> NSLayoutYAxisAnchor {
         let label = NSTextField(labelWithString: "Vertex \(i+1) \(axisLabel)")
         label.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(label)
         
         NSLayoutConstraint.activate([
-            label.topAnchor.constraint(equalTo: topConstraint, constant: 20),
+            label.topAnchor.constraint(equalTo: topAnchor, constant: 20),
             label.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             label.widthAnchor.constraint(equalToConstant: 62)
         ])
@@ -108,12 +135,5 @@ class InputsViewController: NSViewController {
         
         renderer.updateVertexBuffer(with: vertexData)
         renderer.view.setNeedsDisplay(renderer.view.bounds) // Request redraw
-    }
-}
-
-extension Float {
-    func rounded(to places: Int) -> Float {
-        let divisor = pow(10.0, Float(places))
-        return (self * divisor).rounded() / divisor
     }
 }
