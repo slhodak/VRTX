@@ -139,7 +139,7 @@ class Renderer: NSObject, MTKViewDelegate {
             
             logger.debug("Projection matrix set with fov: \(self.perspectiveFOVRadians()), aspect: \(self.projectionPerspectiveAspect), near: \(self.projectionNear), far: \(self.projectionFar)")
         } else {
-            projectionMatrix = matrix_identity_float4x4
+            projectionMatrix = simd_float4x4(1)
         }
         
         projectionMatrixBuffer = device.makeBuffer(bytes: &projectionMatrix,
