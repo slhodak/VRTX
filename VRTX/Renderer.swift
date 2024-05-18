@@ -97,26 +97,6 @@ class Renderer: NSObject, MTKViewDelegate {
         vertexDescriptor.attributes[0].bufferIndex = 0
 
         vertexDescriptor.layouts[0].stride = MemoryLayout<Vertex>.stride
-
-        if useProjection {
-            if usePerspectiveProjection {
-                projectionMatrix = makePerspectiveMatrix(fovyRadians: perspectiveFovyRadians,
-                                                         aspect: projectionPerspectiveAspect,
-                                                         nearZ: projectionNearZ,
-                                                         farZ: projectionFarZ)
-            } else {
-                projectionMatrix = makeOrthographicMatrix(left: orthographicLeft,
-                                                          right: orthographicRight,
-                                                          bottom: orthographicBottom,
-                                                          top: orthographicTop,
-                                                          nearZ: projectionNearZ,
-                                                          farZ: projectionFarZ)
-            }
-        } else {
-            projectionMatrix = matrix_identity_float4x4
-        }
-        
-        projectionMatrixBuffer = device.makeBuffer(bytes: &projectionMatrix,length: MemoryLayout<matrix_float4x4>.stride, options: .storageModeShared)
         
         /// Load shaders
         let defaultLibrary = device.makeDefaultLibrary()!
@@ -137,31 +117,53 @@ class Renderer: NSObject, MTKViewDelegate {
         }
     }
     
+    func setupProjectionMatrixBuffer() {
+        if useProjection {
+            if usePerspectiveProjection {
+                projectionMatrix = LinAlg.perspectiveMatrix(fovyRadians: perspectiveFovyRadians,
+                                                            aspect: projectionPerspectiveAspect,
+                                                            nearZ: projectionNearZ,
+                                                            farZ: projectionFarZ)
+            } else {
+                projectionMatrix = LinAlg.orthographicMatrix(left: orthographicLeft,
+                                                             right: orthographicRight,
+                                                             bottom: orthographicBottom,
+                                                             top: orthographicTop,
+                                                             nearZ: projectionNearZ,
+                                                             farZ: projectionFarZ)
+            }
+        } else {
+            projectionMatrix = matrix_identity_float4x4
+        }
+        
+        projectionMatrixBuffer = device.makeBuffer(bytes: &projectionMatrix,
+                                                   length: MemoryLayout<matrix_float4x4>.stride,
+                                                   options: .storageModeShared)
+    }
+    
     func updateProjectionProperty(name: String, value: Float) {
-        if name == "ortho_left" {
+        switch name {
+        case "ortho_left":
             orthographicLeft = value
-        }
-        if name == "ortho_right" {
+        case "ortho_right":
             orthographicRight = value
-        }
-        if name == "ortho_top" {
+        case "ortho_top":
             orthographicTop = value
-        }
-        if name == "ortho_bottom" {
+        case "ortho_bottom":
             orthographicBottom = value
-        }
-        if name == "near_z" {
+        case "near_z":
             projectionNearZ = value
-        }
-        if name == "far_z" {
+        case "far_z":
             projectionFarZ = value
+        default:
+            break
         }
         
         draw()
     }
     
     func draw() {
-        logger.debug("Drawing scene")
+        //logger.debug("Drawing scene")
         view.setNeedsDisplay(view.bounds)
     }
     
@@ -175,6 +177,7 @@ class Renderer: NSObject, MTKViewDelegate {
         
         renderEncoder.setRenderPipelineState(pipelineState)
         renderEncoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
+        setupProjectionMatrixBuffer()
         renderEncoder.setVertexBuffer(projectionMatrixBuffer, offset: 0, index: 1)
         renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 3)
         renderEncoder.endEncoding()
@@ -185,47 +188,5 @@ class Renderer: NSObject, MTKViewDelegate {
     
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
         // Handle window resize
-    }
-    
-    func makePerspectiveMatrix(fovyRadians: Float, aspect: Float, nearZ: Float, farZ: Float) -> matrix_float4x4 {
-        let yScale = 1 / tan(fovyRadians * 0.5)
-        let xScale = yScale / aspect
-        let zRange = farZ - nearZ
-        let zScale = -(farZ + nearZ) / zRange
-        let wzScale = -2 * farZ * nearZ / zRange
-        
-        let p00 = xScale
-        let p11 = yScale
-        let p22 = zScale
-        let p23: Float = -1
-        let p32 = wzScale
-        
-        let mat = matrix_float4x4(columns: (
-            vector_float4(p00, 0, 0, 0),
-            vector_float4(0, p11, 0, 0),
-            vector_float4(0, 0, p22, p23),
-            vector_float4(0, 0, p32, 0)
-        ))
-        
-        return mat
-    }
-    
-    func makeOrthographicMatrix(left: Float, right: Float, bottom: Float, top: Float, nearZ: Float, farZ: Float) -> matrix_float4x4 {
-        let ral = right + left
-        let rsl = right - left
-        let tab = top + bottom
-        let tsb = top - bottom
-        let fan = farZ + nearZ
-        let fsn = farZ - nearZ
-        
-        let P = matrix_float4x4(
-            columns: (
-                vector_float4(2.0 / rsl, 0.0, 0.0, 0.0),
-                vector_float4(0.0, 2.0 / tsb, 0.0, 0.0),
-                vector_float4(0.0, 0.0, -2.0 / fsn, 0.0),
-                vector_float4(-ral / rsl, -tab / tsb, -fan / fsn, 1.0)
-            )
-        )
-        return P
     }
 }
