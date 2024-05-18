@@ -142,8 +142,8 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
         
         var topAnchor = contentView.topAnchor
         topAnchor = setupVertexSliders(topAnchor: topAnchor)
-        topAnchor = setupLabeledSwitch(name: "Projection", topAnchor: topAnchor, action: #selector(toggleProjectionSwitch(_:)))
-        topAnchor = setupLabeledSwitch(name: "Ortho/Persp", topAnchor: topAnchor, action: #selector(toggleProjectionTypeSwitch(_:)))
+        topAnchor = setupLabeledSwitch(name: "Projection", topAnchor: topAnchor, action: #selector(toggleProjectionSwitch(_:)), value: renderer.useProjection)
+        topAnchor = setupLabeledSwitch(name: "Ortho/Persp", topAnchor: topAnchor, action: #selector(toggleProjectionTypeSwitch(_:)), value: renderer.usePerspectiveProjection)
         topAnchor = setupProjectionMatrixSliders(topAnchor: topAnchor)
         _ = setupRedrawButton(topAnchor: topAnchor)
     }
@@ -217,7 +217,7 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
         return labeledSlider.slider.bottomAnchor
     }
     
-    func setupLabeledSwitch(name: String, topAnchor: NSLayoutYAxisAnchor, action: Selector) -> NSLayoutYAxisAnchor {
+    func setupLabeledSwitch(name: String, topAnchor: NSLayoutYAxisAnchor, action: Selector, value: Bool) -> NSLayoutYAxisAnchor {
         let label = NSTextField(labelWithString: name)
         label.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(label)
@@ -229,6 +229,7 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
         ])
         
         projectionMatrixSwitch = NSSwitch(frame: NSRect(x: 20, y: 20, width: 40, height: 20))
+        projectionMatrixSwitch.state = value ? .on : .off
         projectionMatrixSwitch.target = self
         projectionMatrixSwitch.action = action
         contentView.addSubview(projectionMatrixSwitch)

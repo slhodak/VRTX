@@ -19,7 +19,7 @@ class Renderer: NSObject, MTKViewDelegate {
     ]
     var vertexBuffer: MTLBuffer!
     
-    var projectionMatrix = matrix_identity_float4x4
+    var projectionMatrix = simd_float4x4(1)
     var projectionMatrixBuffer: MTLBuffer?
     var projectionPerspectiveAspect: Float!
     var usePerspectiveProjection: Bool = false { didSet { draw() } }
@@ -143,7 +143,7 @@ class Renderer: NSObject, MTKViewDelegate {
         }
         
         projectionMatrixBuffer = device.makeBuffer(bytes: &projectionMatrix,
-                                                   length: MemoryLayout<matrix_float4x4>.stride,
+                                                   length: MemoryLayout<simd_float4x4>.stride,
                                                    options: .storageModeShared)
         logger.debug("Projection matrix buffer updated.")
     }
