@@ -1,23 +1,25 @@
 import MetalKit
 import Metal
+import os
 
 struct Vertex {
     var position: vector_float4
 }
 
 class Renderer: NSObject, MTKViewDelegate {
+    let logger = Logger(subsystem: "com.samhodak.VRTX", category: "Renderer")
     var view: MTKView!
     var device: MTLDevice!
     var commandQueue: MTLCommandQueue!
     var pipelineState: MTLRenderPipelineState!
     var vertexData: [Vertex] = [
-        Vertex(position: [0.1, 0.0, 0.0, 1.0]),
-        Vertex(position: [0.5, 0.5, 0.0, 1.0]),
-        Vertex(position: [-1.0, 1.0, 0.0, 1.0])
+        Vertex(position: [0.0, -1.0, 0.0, 1.0]),
+        Vertex(position: [0.5, 0.0, 0.0, 1.0]),
+        Vertex(position: [1.0, -1.0, 0.0, 1.0]),
     ]
     var vertexBuffer: MTLBuffer!
     
-    var projectionMatrix: matrix_float4x4!
+    var projectionMatrix = matrix_identity_float4x4
     var projectionMatrixBuffer: MTLBuffer?
     var projectionPerspectiveAspect: Float!
     var usePerspectiveProjection: Bool = false
@@ -46,18 +48,37 @@ class Renderer: NSObject, MTKViewDelegate {
         metalView.delegate = self
         
         createGraphicsPipelineState()
-        createVertexBuffer()
     }
     
-    func updateVertexBuffer(with vertexData: [Vertex]) {
-        let bufferPointer = vertexBuffer.contents()
-        bufferPointer.copyMemory(from: vertexData, byteCount: vertexData.count * MemoryLayout<Vertex>.stride)
+    func updateVertexData(with vertexData: [Vertex]) {
+        self.vertexData = vertexData
+        updateVertexBuffer()
+        //print(vertexData)
+    }
+    
+    func updateVertexBuffer() {
+        let newBufferSize = vertexData.count * MemoryLayout<Vertex>.stride
+        
+        // Check if the existing buffer can accommodate the new data
+        if newBufferSize > vertexBuffer.length {
+            // Reallocate the buffer if new data size exceeds the current buffer size
+            vertexBuffer = device.makeBuffer(bytes: vertexData,
+                                             length: newBufferSize,
+                                             options: .storageModeShared)
+            if vertexBuffer == nil {
+                print("Failed to allocate vertex buffer.")
+                return
+            }
+        } else {
+            // Update the buffer contents directly if it fits
+            let bufferPointer = vertexBuffer.contents()
+            bufferPointer.copyMemory(from: vertexData, byteCount: newBufferSize)
+        }
     }
     
     func createGraphicsPipelineState() {
-        
         vertexBuffer = device.makeBuffer(bytes: vertexData,
-                                         length: vertexData.count * MemoryLayout<vector_float3>.size,
+                                         length: vertexData.count * MemoryLayout<Vertex>.stride,
                                          options: .storageModeShared)
         
         let vertexDescriptor = MTLVertexDescriptor()
@@ -106,8 +127,8 @@ class Renderer: NSObject, MTKViewDelegate {
         }
     }
     
-    func createVertexBuffer() {
-        /// Buffer created in `createGraphicsPipelineState`
+    func draw() {
+        view.setNeedsDisplay(view.bounds)
     }
     
     func draw(in view: MTKView) {

@@ -1,5 +1,6 @@
 import Cocoa
 import MetalKit
+import os
 
 /// I want to add a slider for every property that needs one
 /// i want to add that slider by name and associate it with the correct value automatically
@@ -86,6 +87,7 @@ enum SliderGroup {
 
 class InputsViewController: NSViewController, LabeledSliderDelegate {
     let renderer: Renderer
+    let logger = Logger(subsystem: "com.samhodak.VRTX", category: "InputsViewController")
     
     var labeledSliders: [SliderGroup: [String: LabeledSlider]] = [:]
     var redrawButton: NSButton!
@@ -237,41 +239,52 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
     
     @objc func redrawWithCurrentValues() {
         /// Collect values from all inputs and use them to update the renderer, then redraw the rendering
-        
-        /// Collect vertex data from vertex sliders
-        guard let vertexPositionSliders = labeledSliders[.vertexPosition],
-              let projectionMatrixSliders = labeledSliders[.projectionMatrix] else {
+        updateRendererVertexData()
+        updateRendererProjectionProperties()
+        renderer.draw()
+    }
+    
+    func updateRendererVertexData() {
+        guard let vertexPositionSliders = labeledSliders[.vertexPosition] else {
+            logger.error("No vertex position sliders found")
             return
         }
         
-        let vertices: [String: Vertex] = [
-            "A": Vertex(position: vector_float4()),
-            "B": Vertex(position: vector_float4()),
-            "C": Vertex(position: vector_float4()),
-        ]
+        var vertices: [Vertex] = Array(repeating: Vertex(position: vector_float4()), count: 3)
         /// i want to know which vertex I am working with, and then which axis
+        var i = 0
         for (name, labeledSlider) in vertexPositionSliders {
-            let parts = name.split(separator: "_")
+            let nameParts = name.split(separator: "_")
+            let vertexName = String(nameParts[0])
+            let axisName = String(nameParts[1])
             
-            guard var vertex = vertices[String(parts[0])] else { continue }
+            logger.debug("Reading slider for \(vertexName) on \(axisName) axis with value: \(labeledSlider.slider.floatValue)")
             
-            switch String(parts[1]) {
+            switch axisName {
             case "x":
-                vertex.position.x = labeledSlider.slider.floatValue
+                vertices[i%3].position.x = labeledSlider.slider.floatValue
             case "y":
-                vertex.position.y = labeledSlider.slider.floatValue
+                vertices[i%3].position.y = labeledSlider.slider.floatValue
             case "z":
-                vertex.position.z = labeledSlider.slider.floatValue
+                vertices[i%3].position.z = labeledSlider.slider.floatValue
             default:
+                logger.error("unrecognized vertex axis!")
                 break
             }
             
-            vertex.position.w = 1.0
+            vertices[i%3].position.w = 1.0
+            i += 1
         }
         
-        renderer.updateVertexBuffer(with: Array(vertices.values))
+        renderer.updateVertexData(with: vertices)
+    }
+    
+    func updateRendererProjectionProperties() {
+        guard let projectionMatrixSliders = labeledSliders[.projectionMatrix] else {
+            logger.error("No projection sliders found")
+            return
+        }
         
-        /// Collect projection matrix data from projection matrix sliders
         for (name, labeledSlider) in projectionMatrixSliders {
             if name == "ortho_Left" {
                 renderer.orthographicLeft = labeledSlider.slider.floatValue
@@ -292,7 +305,5 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
                 renderer.projectionFarZ = labeledSlider.slider.floatValue
             }
         }
-        
-        renderer.view.setNeedsDisplay(renderer.view.bounds) // Request redraw
     }
 }
