@@ -50,10 +50,20 @@ class Renderer: NSObject, MTKViewDelegate {
         createGraphicsPipelineState()
     }
     
-    func updateVertexData(with vertexData: [Vertex]) {
-        self.vertexData = vertexData
+    func updateVertex(index: Int, axis: String, value: Float) {
+        switch axis {
+        case "x":
+            vertexData[index].position.x = value
+        case "y":
+            vertexData[index].position.y = value
+        case "z":
+            vertexData[index].position.z = value
+        default:
+            logger.error("Could not update vertex: unrecognized axis")
+            break
+        }
         updateVertexBuffer()
-        //print(vertexData)
+        draw()
     }
     
     func updateVertexBuffer() {

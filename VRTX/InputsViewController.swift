@@ -110,12 +110,18 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
     
     func vertexSliderValueChanged(name: String, value: Float) {
         labeledSliders[.vertexPosition]?[name]?.valueLabel.stringValue = String(value)
-        redrawWithCurrentValues()
+        
+        let nameParts = name.split(separator: "_")
+        guard let index = Int(nameParts[0]) else {
+            logger.error("Name part \(nameParts[0]) cast to Int failed")
+            return
+        }
+        renderer.updateVertex(index: index, axis: String(nameParts[1]), value: value)
     }
     
     func projectionSliderValueChanged(name: String, value: Float) {
         labeledSliders[.projectionMatrix]?[name]?.valueLabel.stringValue = String(value)
-        redrawWithCurrentValues()
+        updateRendererProjectionProperties()
     }
     
     override func viewDidLoad() {
@@ -131,17 +137,15 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
     
     func setupVertexInputs(topAnchor: NSLayoutYAxisAnchor) -> NSLayoutYAxisAnchor {
         let axisLabels = ["x", "y", "z"]
-        let vertexNames = ["A", "B", "C"]
         var lastTopAnchor = topAnchor
         
         if labeledSliders[.vertexPosition] == nil {
             labeledSliders[.vertexPosition] = [:]
         }
         
-        for vertexName in vertexNames {
+        for i in 0..<3 {
             for axisLabel in axisLabels {
-                let name = "\(vertexName)_\(axisLabel)"
-                // get a unique tag int...
+                let name = "\(i)_\(axisLabel)"
                 let labeledSlider = LabeledSlider(type: .vertexPosition)
                 labeledSlider.setup(view: view,
                                     topAnchor: lastTopAnchor,
@@ -215,17 +219,17 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
     
     @objc func toggleProjectionSwitch(_ sender: NSSwitch) {
         renderer.useProjection = sender.state == .on
-        redrawWithCurrentValues()
+        updateRendererProjectionProperties()
     }
     
     @objc func toggleProjectionTypeSwitch(_ sender: NSSwitch) {
         renderer.usePerspectiveProjection = sender.state == .on
-        redrawWithCurrentValues()
+        updateRendererProjectionProperties()
     }
     
     func setupRedrawButton(topAnchor: NSLayoutYAxisAnchor) -> NSLayoutYAxisAnchor {
         // Create a button to apply changes and redraw
-        redrawButton = NSButton(title: "Redraw", target: self, action: #selector(redrawWithCurrentValues))
+        redrawButton = NSButton(title: "Redraw", target: self, action: #selector(redraw))
         redrawButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(redrawButton)
         
@@ -237,46 +241,8 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
         return redrawButton.bottomAnchor
     }
     
-    @objc func redrawWithCurrentValues() {
-        /// Collect values from all inputs and use them to update the renderer, then redraw the rendering
-        updateRendererVertexData()
-        updateRendererProjectionProperties()
+    @objc func redraw() {
         renderer.draw()
-    }
-    
-    func updateRendererVertexData() {
-        guard let vertexPositionSliders = labeledSliders[.vertexPosition] else {
-            logger.error("No vertex position sliders found")
-            return
-        }
-        
-        var vertices: [Vertex] = Array(repeating: Vertex(position: vector_float4()), count: 3)
-        /// i want to know which vertex I am working with, and then which axis
-        var i = 0
-        for (name, labeledSlider) in vertexPositionSliders {
-            let nameParts = name.split(separator: "_")
-            let vertexName = String(nameParts[0])
-            let axisName = String(nameParts[1])
-            
-            logger.debug("Reading slider for \(vertexName) on \(axisName) axis with value: \(labeledSlider.slider.floatValue)")
-            
-            switch axisName {
-            case "x":
-                vertices[i%3].position.x = labeledSlider.slider.floatValue
-            case "y":
-                vertices[i%3].position.y = labeledSlider.slider.floatValue
-            case "z":
-                vertices[i%3].position.z = labeledSlider.slider.floatValue
-            default:
-                logger.error("unrecognized vertex axis!")
-                break
-            }
-            
-            vertices[i%3].position.w = 1.0
-            i += 1
-        }
-        
-        renderer.updateVertexData(with: vertices)
     }
     
     func updateRendererProjectionProperties() {
