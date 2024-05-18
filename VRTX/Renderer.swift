@@ -24,13 +24,13 @@ class Renderer: NSObject, MTKViewDelegate {
     var projectionPerspectiveAspect: Float!
     var usePerspectiveProjection: Bool = false { didSet { draw() } }
     var useProjection: Bool = false { didSet { draw() } }
-    var perspectiveFovyRadians: Float = Float.pi / 4
+    var perspectiveFOVRadians: Float = Float.pi / 4
     var orthographicLeft: Float = 0
     var orthographicRight: Float = 0
     var orthographicTop: Float = 0
     var orthographicBottom: Float = 0
-    var projectionNearZ: Float = 0.1
-    var projectionFarZ: Float = 100.0
+    var projectionNear: Float = 0.1
+    var projectionFar: Float = 100.0
     
     init?(metalView: MTKView) {
         guard let device = MTLCreateSystemDefaultDevice(),
@@ -120,17 +120,17 @@ class Renderer: NSObject, MTKViewDelegate {
     func setupProjectionMatrixBuffer() {
         if useProjection {
             if usePerspectiveProjection {
-                projectionMatrix = LinAlg.perspectiveMatrix(fovyRadians: perspectiveFovyRadians,
+                projectionMatrix = LinAlg.perspectiveMatrix(fov: perspectiveFOVRadians,
                                                             aspect: projectionPerspectiveAspect,
-                                                            nearZ: projectionNearZ,
-                                                            farZ: projectionFarZ)
+                                                            near: projectionNear,
+                                                            far: projectionFar)
             } else {
                 projectionMatrix = LinAlg.orthographicMatrix(left: orthographicLeft,
                                                              right: orthographicRight,
                                                              bottom: orthographicBottom,
                                                              top: orthographicTop,
-                                                             nearZ: projectionNearZ,
-                                                             farZ: projectionFarZ)
+                                                             nearZ: projectionNear,
+                                                             farZ: projectionFar)
             }
         } else {
             projectionMatrix = matrix_identity_float4x4
@@ -151,10 +151,10 @@ class Renderer: NSObject, MTKViewDelegate {
             orthographicTop = value
         case "ortho_bottom":
             orthographicBottom = value
-        case "near_z":
-            projectionNearZ = value
-        case "far_z":
-            projectionFarZ = value
+        case "near":
+            projectionNear = value
+        case "far":
+            projectionFar = value
         default:
             break
         }

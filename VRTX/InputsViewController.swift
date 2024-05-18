@@ -60,6 +60,7 @@ class LabeledSlider {
         
         valueLabel = NSTextField(labelWithString: "0")
         valueLabel.translatesAutoresizingMaskIntoConstraints = false
+        valueLabel.doubleValue = value
         view.addSubview(valueLabel)
         
         NSLayoutConstraint.activate([
@@ -128,14 +129,14 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
         super.viewDidLoad()
         
         var topAnchor = view.topAnchor
-        topAnchor = setupVertexInputs(topAnchor: topAnchor)
+        topAnchor = setupVertexSliders(topAnchor: topAnchor)
         topAnchor = setupLabeledSwitch(name: "Projection", topAnchor: topAnchor, action: #selector(toggleProjectionSwitch(_:)))
         topAnchor = setupLabeledSwitch(name: "Ortho/Persp", topAnchor: topAnchor, action: #selector(toggleProjectionTypeSwitch(_:)))
-        topAnchor = setupProjectionMatrixInputs(topAnchor: topAnchor)
+        topAnchor = setupProjectionMatrixSliders(topAnchor: topAnchor)
         _ = setupRedrawButton(topAnchor: topAnchor)
     }
     
-    func setupVertexInputs(topAnchor: NSLayoutYAxisAnchor) -> NSLayoutYAxisAnchor {
+    func setupVertexSliders(topAnchor: NSLayoutYAxisAnchor) -> NSLayoutYAxisAnchor {
         let axisLabels = ["x", "y", "z"]
         var lastTopAnchor = topAnchor
         
@@ -163,7 +164,7 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
         return lastTopAnchor
     }
     
-    func setupProjectionMatrixInputs(topAnchor: NSLayoutYAxisAnchor) -> NSLayoutYAxisAnchor {
+    func setupProjectionMatrixSliders(topAnchor: NSLayoutYAxisAnchor) -> NSLayoutYAxisAnchor {
         if labeledSliders[.projectionMatrix] == nil {
             labeledSliders[.projectionMatrix] = [:]
         }
@@ -172,20 +173,20 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
         bottomAnchor = addProjectionMatrixSlider(name: "ortho_right", topAnchor: bottomAnchor)
         bottomAnchor = addProjectionMatrixSlider(name: "ortho_top", topAnchor: bottomAnchor)
         bottomAnchor = addProjectionMatrixSlider(name: "ortho_bottom", topAnchor: bottomAnchor)
-        bottomAnchor = addProjectionMatrixSlider(name: "near_z", topAnchor: bottomAnchor)
-        bottomAnchor = addProjectionMatrixSlider(name: "far_z", topAnchor: bottomAnchor)
+        bottomAnchor = addProjectionMatrixSlider(name: "near", topAnchor: bottomAnchor)
+        bottomAnchor = addProjectionMatrixSlider(name: "far", topAnchor: bottomAnchor, value: 100.0)
         
         return bottomAnchor
     }
     
-    func addProjectionMatrixSlider(name: String, topAnchor: NSLayoutYAxisAnchor) -> NSLayoutYAxisAnchor {
+    func addProjectionMatrixSlider(name: String, topAnchor: NSLayoutYAxisAnchor, value: Double = 0, minValue: Double = 0, maxValue: Double = 100) -> NSLayoutYAxisAnchor {
         let labeledSlider = LabeledSlider(type: .projectionMatrix)
         labeledSlider.setup(view: view,
                             topAnchor: topAnchor,
                             name: name,
-                            value: 0.0,
-                            minValue: 0.0,
-                            maxValue: 100.0)
+                            value: value,
+                            minValue: minValue,
+                            maxValue: maxValue)
         labeledSlider.delegate = self
         labeledSliders[.projectionMatrix]![name] = labeledSlider
         
