@@ -192,25 +192,25 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
             labeledSliders[.projectionMatrix] = [:]
         }
         
-        var bottomAnchor = addProjectionMatrixSlider(property: .FOVDenominator, topAnchor: topAnchor, value: Double(renderer.perspectiveFOVDenominator), maxValue: 16)
+        var bottomAnchor = addProjectionMatrixSlider(property: .FOVDenominator, topAnchor: topAnchor, value: renderer.perspectiveFOVDenominator, maxValue: 16)
         bottomAnchor = addProjectionMatrixSlider(property: .orthoLeft, topAnchor: bottomAnchor)
         bottomAnchor = addProjectionMatrixSlider(property: .orthoRight, topAnchor: bottomAnchor)
         bottomAnchor = addProjectionMatrixSlider(property: .orthoTop, topAnchor: bottomAnchor)
         bottomAnchor = addProjectionMatrixSlider(property: .orthoBottom, topAnchor: bottomAnchor)
-        bottomAnchor = addProjectionMatrixSlider(property: .near, topAnchor: bottomAnchor)
-        bottomAnchor = addProjectionMatrixSlider(property: .far, topAnchor: bottomAnchor, value: 100.0)
+        bottomAnchor = addProjectionMatrixSlider(property: .near, topAnchor: bottomAnchor, value: renderer.projectionNear)
+        bottomAnchor = addProjectionMatrixSlider(property: .far, topAnchor: bottomAnchor, value: renderer.projectionFar)
         
         return bottomAnchor
     }
     
-    func addProjectionMatrixSlider(property: ProjectionProperty, topAnchor: NSLayoutYAxisAnchor, value: Double = 0, minValue: Double = 0, maxValue: Double = 100) -> NSLayoutYAxisAnchor {
+    func addProjectionMatrixSlider(property: ProjectionProperty, topAnchor: NSLayoutYAxisAnchor, value: Float = 0, minValue: Float = 0, maxValue: Float = 100) -> NSLayoutYAxisAnchor {
         let labeledSlider = LabeledSlider(type: .projectionMatrix)
         labeledSlider.setup(view: contentView,
                             topAnchor: topAnchor,
                             name: property.rawValue,
-                            value: value,
-                            minValue: minValue,
-                            maxValue: maxValue)
+                            value: Double(value),
+                            minValue: Double(minValue),
+                            maxValue: Double(maxValue))
         labeledSlider.delegate = self
         labeledSliders[.projectionMatrix]![property.rawValue] = labeledSlider
         

@@ -13,23 +13,23 @@ class Renderer: NSObject, MTKViewDelegate {
     var commandQueue: MTLCommandQueue!
     var pipelineState: MTLRenderPipelineState!
     var vertexData: [Vertex] = [
-        Vertex(position: [0.0, -1.0, 0.0, 1.0]),
-        Vertex(position: [0.5, 0.0, 0.0, 1.0]),
-        Vertex(position: [1.0, -1.0, 0.0, 1.0]),
+        Vertex(position: [0.0, -1.0, 0.1, 1.0]),
+        Vertex(position: [0.5, 0.0, 0.1, 1.0]),
+        Vertex(position: [1.0, -1.0, 0.1, 1.0]),
     ]
     var vertexBuffer: MTLBuffer!
     
     var projectionMatrix = simd_float4x4(1)
     var projectionMatrixBuffer: MTLBuffer?
     var projectionPerspectiveAspect: Float!
-    var usePerspectiveProjection: Bool = false { didSet { draw() } }
-    var useProjection: Bool = false { didSet { draw() } }
+    var usePerspectiveProjection: Bool = true { didSet { draw() } }
+    var useProjection: Bool = true { didSet { draw() } }
     var perspectiveFOVDenominator: Float = 4.0
     var orthographicLeft: Float = 0
     var orthographicRight: Float = 0
     var orthographicTop: Float = 0
     var orthographicBottom: Float = 0
-    var projectionNear: Float = 0.1
+    var projectionNear: Float = 0.0
     var projectionFar: Float = 100.0
     
     init?(metalView: MTKView) {
