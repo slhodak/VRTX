@@ -144,14 +144,25 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
             labeledSliders[.vertexPosition] = [:]
         }
         
-        for i in 0..<3 {
+        for (i, vertex) in renderer.vertexData.enumerated() {
             for axisLabel in axisLabels {
                 let name = "\(i)_\(axisLabel)"
                 let labeledSlider = LabeledSlider(type: .vertexPosition)
+                var vertexAxisValue: Float = 0.0
+                switch axisLabel {
+                case "x":
+                    vertexAxisValue = vertex.position.x
+                case "y":
+                    vertexAxisValue = vertex.position.y
+                case "z":
+                    vertexAxisValue = vertex.position.z
+                default:
+                    break
+                }
                 labeledSlider.setup(view: view,
                                     topAnchor: lastTopAnchor,
                                     name: name,
-                                    value: 0.0,
+                                    value: Double(vertexAxisValue),
                                     minValue: -1.0,
                                     maxValue: 1.0)
                 
