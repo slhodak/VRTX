@@ -121,7 +121,7 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
     
     func projectionSliderValueChanged(name: String, value: Float) {
         labeledSliders[.projectionMatrix]?[name]?.valueLabel.stringValue = String(value)
-        updateRendererProjectionProperties()
+        renderer.updateProjectionProperty(name: name, value: value)
     }
     
     override func viewDidLoad() {
@@ -219,12 +219,10 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
     
     @objc func toggleProjectionSwitch(_ sender: NSSwitch) {
         renderer.useProjection = sender.state == .on
-        updateRendererProjectionProperties()
     }
     
     @objc func toggleProjectionTypeSwitch(_ sender: NSSwitch) {
         renderer.usePerspectiveProjection = sender.state == .on
-        updateRendererProjectionProperties()
     }
     
     func setupRedrawButton(topAnchor: NSLayoutYAxisAnchor) -> NSLayoutYAxisAnchor {
@@ -243,33 +241,5 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
     
     @objc func redraw() {
         renderer.draw()
-    }
-    
-    func updateRendererProjectionProperties() {
-        guard let projectionMatrixSliders = labeledSliders[.projectionMatrix] else {
-            logger.error("No projection sliders found")
-            return
-        }
-        
-        for (name, labeledSlider) in projectionMatrixSliders {
-            if name == "ortho_Left" {
-                renderer.orthographicLeft = labeledSlider.slider.floatValue
-            }
-            if name == "orthog_right" {
-                renderer.orthographicRight = labeledSlider.slider.floatValue
-            }
-            if name == "ortho_top" {
-                renderer.orthographicTop = labeledSlider.slider.floatValue
-            }
-            if name == "ortho_bottom" {
-                renderer.orthographicBottom = labeledSlider.slider.floatValue
-            }
-            if name == "near_z" {
-                renderer.projectionNearZ = labeledSlider.slider.floatValue
-            }
-            if name == "far_z" {
-                renderer.projectionFarZ = labeledSlider.slider.floatValue
-            }
-        }
     }
 }

@@ -22,8 +22,8 @@ class Renderer: NSObject, MTKViewDelegate {
     var projectionMatrix = matrix_identity_float4x4
     var projectionMatrixBuffer: MTLBuffer?
     var projectionPerspectiveAspect: Float!
-    var usePerspectiveProjection: Bool = false
-    var useProjection: Bool = false
+    var usePerspectiveProjection: Bool = false { didSet { draw() } }
+    var useProjection: Bool = false { didSet { draw() } }
     var perspectiveFovyRadians: Float = Float.pi / 4
     var orthographicLeft: Float = 0
     var orthographicRight: Float = 0
@@ -137,7 +137,31 @@ class Renderer: NSObject, MTKViewDelegate {
         }
     }
     
+    func updateProjectionProperty(name: String, value: Float) {
+        if name == "ortho_left" {
+            orthographicLeft = value
+        }
+        if name == "ortho_right" {
+            orthographicRight = value
+        }
+        if name == "ortho_top" {
+            orthographicTop = value
+        }
+        if name == "ortho_bottom" {
+            orthographicBottom = value
+        }
+        if name == "near_z" {
+            projectionNearZ = value
+        }
+        if name == "far_z" {
+            projectionFarZ = value
+        }
+        
+        draw()
+    }
+    
     func draw() {
+        logger.debug("Drawing scene")
         view.setNeedsDisplay(view.bounds)
     }
     
