@@ -24,7 +24,7 @@ class Renderer: NSObject, MTKViewDelegate {
     var projectionPerspectiveAspect: Float!
     var usePerspectiveProjection: Bool = false { didSet { draw() } }
     var useProjection: Bool = false { didSet { draw() } }
-    var perspectiveFOVRadians: Float = Float.pi / 4
+    var perspectiveFOVDenominator: Float = 4.0
     var orthographicLeft: Float = 0
     var orthographicRight: Float = 0
     var orthographicTop: Float = 0
@@ -117,10 +117,14 @@ class Renderer: NSObject, MTKViewDelegate {
         }
     }
     
+    func perspectiveFOVRadians() -> Float {
+        return Float.pi / perspectiveFOVDenominator
+    }
+    
     func setupProjectionMatrixBuffer() {
         if useProjection {
             if usePerspectiveProjection {
-                projectionMatrix = LinAlg.perspectiveMatrix(fov: perspectiveFOVRadians,
+                projectionMatrix = LinAlg.perspectiveMatrix(fov: perspectiveFOVRadians(),
                                                             aspect: projectionPerspectiveAspect,
                                                             near: projectionNear,
                                                             far: projectionFar)
@@ -132,6 +136,8 @@ class Renderer: NSObject, MTKViewDelegate {
                                                              nearZ: projectionNear,
                                                              farZ: projectionFar)
             }
+            
+            logger.debug("Projection matrix set with fov: \(self.perspectiveFOVRadians()), aspect: \(self.projectionPerspectiveAspect), near: \(self.projectionNear), far: \(self.projectionFar)")
         } else {
             projectionMatrix = matrix_identity_float4x4
         }
@@ -139,24 +145,25 @@ class Renderer: NSObject, MTKViewDelegate {
         projectionMatrixBuffer = device.makeBuffer(bytes: &projectionMatrix,
                                                    length: MemoryLayout<matrix_float4x4>.stride,
                                                    options: .storageModeShared)
+        logger.debug("Projection matrix buffer updated.")
     }
     
-    func updateProjectionProperty(name: String, value: Float) {
-        switch name {
-        case "ortho_left":
+    func updateProjection(property: ProjectionProperty, value: Float) {
+        switch property {
+        case .FOVDenominator:
+            perspectiveFOVDenominator = value
+        case .orthoLeft:
             orthographicLeft = value
-        case "ortho_right":
+        case .orthoRight:
             orthographicRight = value
-        case "ortho_top":
+        case .orthoTop:
             orthographicTop = value
-        case "ortho_bottom":
+        case .orthoBottom:
             orthographicBottom = value
-        case "near":
+        case .near:
             projectionNear = value
-        case "far":
+        case .far:
             projectionFar = value
-        default:
-            break
         }
         
         draw()
@@ -188,5 +195,19 @@ class Renderer: NSObject, MTKViewDelegate {
     
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
         // Handle window resize
+    }
+}
+
+enum ProjectionProperty: String {
+    case FOVDenominator
+    case orthoLeft
+    case orthoRight
+    case orthoTop
+    case orthoBottom
+    case near
+    case far
+    
+    static func fromString(_ string: String) -> ProjectionProperty? {
+        return ProjectionProperty(rawValue: string)
     }
 }

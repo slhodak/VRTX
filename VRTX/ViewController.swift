@@ -12,7 +12,7 @@ class ViewController: NSViewController {
         
         guard let metalView = view as? MTKView,
               let renderer = Renderer(metalView: metalView) else { return }
-            
+        
         setupInputsView(renderer: renderer)
         setupMetalView()
     }
