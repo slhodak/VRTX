@@ -119,6 +119,7 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
             logger.error("Name part \(nameParts[0]) cast to Int failed")
             return
         }
+        logger.info("vertex slider value changed")
         renderer.updateVertex(index: index, axis: String(nameParts[1]), value: value)
     }
     

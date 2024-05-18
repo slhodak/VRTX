@@ -12,6 +12,11 @@ class Renderer: NSObject, MTKViewDelegate {
     var device: MTLDevice!
     var commandQueue: MTLCommandQueue!
     var pipelineState: MTLRenderPipelineState!
+    var originalVertexData: [Vertex] = [
+        Vertex(position: [0.0, -1.0, 0.1, 1.0]),
+        Vertex(position: [0.5, 0.0, 0.1, 1.0]),
+        Vertex(position: [1.0, -1.0, 0.1, 1.0]),
+    ]
     var vertexData: [Vertex] = [
         Vertex(position: [0.0, -1.0, 0.1, 1.0]),
         Vertex(position: [0.5, 0.0, 0.1, 1.0]),
@@ -46,6 +51,8 @@ class Renderer: NSObject, MTKViewDelegate {
         self.projectionPerspectiveAspect = Float(view.bounds.width / view.bounds.size.height)
         metalView.device = device
         metalView.delegate = self
+        metalView.isPaused = true
+        metalView.enableSetNeedsDisplay = true
         
         createGraphicsPipelineState()
     }
@@ -62,11 +69,10 @@ class Renderer: NSObject, MTKViewDelegate {
             logger.error("Could not update vertex: unrecognized axis")
             break
         }
-        updateVertexBuffer()
         draw()
     }
     
-    func updateVertexBuffer() {
+    func updateVertexBuffer(from vertexData: [Vertex]) {
         let newBufferSize = vertexData.count * MemoryLayout<Vertex>.stride
         
         // Check if the existing buffer can accommodate the new data
@@ -137,7 +143,7 @@ class Renderer: NSObject, MTKViewDelegate {
                                                              farZ: projectionFar)
             }
             
-            logger.debug("Projection matrix set with fov: \(self.perspectiveFOVRadians()), aspect: \(self.projectionPerspectiveAspect), near: \(self.projectionNear), far: \(self.projectionFar)")
+            //logger.debug("Projection matrix set with fov: \(self.perspectiveFOVRadians()), aspect: \(self.projectionPerspectiveAspect), near: \(self.projectionNear), far: \(self.projectionFar)")
         } else {
             projectionMatrix = simd_float4x4(1)
         }
@@ -145,7 +151,6 @@ class Renderer: NSObject, MTKViewDelegate {
         projectionMatrixBuffer = device.makeBuffer(bytes: &projectionMatrix,
                                                    length: MemoryLayout<simd_float4x4>.stride,
                                                    options: .storageModeShared)
-        logger.debug("Projection matrix buffer updated.")
     }
     
     func updateProjection(property: ProjectionProperty, value: Float) {
@@ -169,8 +174,16 @@ class Renderer: NSObject, MTKViewDelegate {
         draw()
     }
     
+    func scale(vertices: [Vertex], by scalar: Float) -> [Vertex] {
+        var scaledVertices: [Vertex] = []
+        for vertex in vertices {
+            scaledVertices.append(Vertex(position: vertex.position * scalar))
+        }
+        
+        return scaledVertices
+    }
+    
     func draw() {
-        //logger.debug("Drawing scene")
         view.setNeedsDisplay(view.bounds)
     }
     
@@ -183,7 +196,14 @@ class Renderer: NSObject, MTKViewDelegate {
         }
         
         renderEncoder.setRenderPipelineState(pipelineState)
+        var vertexData = self.vertexData
+        if useProjection && usePerspectiveProjection {
+            logger.debug("Using scaled vertex data")
+            vertexData = scale(vertices: vertexData, by: 100)
+        }
+        updateVertexBuffer(from: vertexData)
         renderEncoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
+        
         setupProjectionMatrixBuffer()
         renderEncoder.setVertexBuffer(projectionMatrixBuffer, offset: 0, index: 1)
         renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 3)
