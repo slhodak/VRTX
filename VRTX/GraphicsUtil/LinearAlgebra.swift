@@ -3,21 +3,19 @@ import simd
 typealias LinAlg = LinearAlgebra
 
 enum LinearAlgebra {
-    static func perspectiveMatrix(fov: Float, aspect: Float, near: Float, far: Float) -> simd_float4x4 {
-        let yScale = 1 / tan(fov * 0.5)
+    static func perspectiveMatrix(fovY: Float, aspect: Float, near: Float, far: Float) -> simd_float4x4 {
+        let yScale = 1 / tan(fovY * 0.5)
         let xScale = yScale / aspect
         let zRange = far - near
         let zScale = -(far + near) / zRange
         let wzScale = -2 * far * near / zRange
         
-        let P = simd_float4x4(columns: (
-            vector_float4(xScale,   0,      0,      0),
-            vector_float4(0,        yScale, 0,      0),
-            vector_float4(0,        0,      zScale, wzScale),
-            vector_float4(0,        0,      -1,     0)
-        ))
+        let P = simd_float4(xScale, 0, 0, 0)
+        let Q = simd_float4(0, yScale, 0, 0)
+        let R = simd_float4(0, 0, zScale, -1)
+        let S = simd_float4(0, 0, wzScale, 0)
         
-        return P
+        return simd_float4x4(P, Q, R, S)
     }
     
     static func orthographicMatrix(left: Float, right: Float, bottom: Float, top: Float, nearZ: Float, farZ: Float) -> simd_float4x4 {

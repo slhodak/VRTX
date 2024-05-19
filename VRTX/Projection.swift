@@ -9,7 +9,7 @@ class Projection {
     var projectionPerspectiveAspect: Float!
     var usePerspectiveProjection: Bool = false
     var useProjection: Bool = false
-    var perspectiveFOVDenominator: Float = 4.0
+    var perspectiveFOVYDenominator: Float = 4.0
     var orthographicLeft: Float = 0
     var orthographicRight: Float = 0
     var orthographicTop: Float = 0
@@ -17,18 +17,22 @@ class Projection {
     var projectionNear: Float = 0.0
     var projectionFar: Float = 100.0
     
-    func perspectiveFOVRadians() -> Float {
-        return Float.pi / perspectiveFOVDenominator
+    init(size: CGSize) {
+        setProjectionMatrixAspect(for: size)
     }
     
-    func setProjectionMatrixAspect(for view: NSView) {
-        projectionPerspectiveAspect = Float(view.bounds.width / view.bounds.size.height)
+    func perspectiveFOVYRadians() -> Float {
+        return Float.pi / perspectiveFOVYDenominator
+    }
+    
+    func setProjectionMatrixAspect(for size: CGSize) {
+        projectionPerspectiveAspect = Float(size.width / size.height)
     }
     
     func setupProjectionMatrixBuffer(for device: MTLDevice) {
         if useProjection {
             if usePerspectiveProjection {
-                projectionMatrix = LinAlg.perspectiveMatrix(fov: perspectiveFOVRadians(),
+                projectionMatrix = LinAlg.perspectiveMatrix(fovY: perspectiveFOVYRadians(),
                                                             aspect: projectionPerspectiveAspect,
                                                             near: projectionNear,
                                                             far: projectionFar)

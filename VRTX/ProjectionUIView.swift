@@ -14,21 +14,32 @@ struct ProjectionUIView: View {
                 Toggle(isOn: $projection.useProjection) {
                     Text("Projection")
                 }
-                .onChange(of: projection.useProjection) {
-                    renderer.draw()
-                }
                 Toggle(isOn: $projection.usePerspectiveProjection) {
                     Text("Ortho/Persp")
                 }
-                .onChange(of: projection.usePerspectiveProjection) {
-                    renderer.draw()
-                }
             }
-            Slider(value: $projection.orthographicTop) {
-                Text("Orthographic Top")
-            }
-            //... more sliders
+            LabeledSlider(name: "FOV Y Radians Denominator (x in Float.pi / x)", value: $projection.perspectiveFOVYDenominator)
+            LabeledSlider(name: "Orthographic Top", value: $projection.orthographicTop)
+            LabeledSlider(name: "Orthographic Bottom", value: $projection.orthographicBottom)
+            LabeledSlider(name: "Orthographic Left", value: $projection.orthographicLeft)
+            LabeledSlider(name: "Orthographic Right", value: $projection.orthographicRight)
+            LabeledSlider(name: "Near Z", value: $projection.projectionNear)
+            LabeledSlider(name: "Far Z", value: $projection.projectionFar)
         }
         .padding()
+    }
+}
+
+struct LabeledSlider: View {
+    let name: String
+    @Binding var value: Float
+    
+    var body: some View {
+        HStack {
+            Slider(value: $value) {
+                Text(name)
+            }
+            Text("\(value)")
+        }
     }
 }

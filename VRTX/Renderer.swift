@@ -20,10 +20,9 @@ class Renderer: NSObject, MTKViewDelegate {
         self.device = device
         self.commandQueue = queue
         self.geometry = Geometry()
-        self.projection = Projection()
+        self.projection = Projection(size: view.bounds.size)
         super.init()
         
-        projection.setProjectionMatrixAspect(for: view)
         metalView.device = device
         metalView.delegate = self
         metalView.isPaused = true
