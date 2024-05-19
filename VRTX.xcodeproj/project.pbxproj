@@ -19,6 +19,8 @@
 		17ED9E5F2BFA6CB900268A2A /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17ED9E5E2BFA6CB900268A2A /* Geometry.swift */; };
 		17ED9E612BFA6D2D00268A2A /* GeometryUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17ED9E602BFA6D2D00268A2A /* GeometryUIView.swift */; };
 		17ED9E632BFA6D3900268A2A /* ProjectionUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17ED9E622BFA6D3900268A2A /* ProjectionUIView.swift */; };
+		17ED9E652BFAA52300268A2A /* SIMD.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17ED9E642BFAA52300268A2A /* SIMD.swift */; };
+		17ED9E672BFAAA5400268A2A /* LabeledSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17ED9E662BFAAA5400268A2A /* LabeledSlider.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +40,8 @@
 		17ED9E5E2BFA6CB900268A2A /* Geometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
 		17ED9E602BFA6D2D00268A2A /* GeometryUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeometryUIView.swift; sourceTree = "<group>"; };
 		17ED9E622BFA6D3900268A2A /* ProjectionUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectionUIView.swift; sourceTree = "<group>"; };
+		17ED9E642BFAA52300268A2A /* SIMD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SIMD.swift; sourceTree = "<group>"; };
+		17ED9E662BFAAA5400268A2A /* LabeledSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabeledSlider.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -92,6 +96,7 @@
 				17E962CC2BF6D87F00F0A227 /* Assets.xcassets */,
 				17E962D12BF6D87F00F0A227 /* VRTX.entitlements */,
 				17E962DC2BF6E43300F0A227 /* Shaders.metal */,
+				17ED9E662BFAAA5400268A2A /* LabeledSlider.swift */,
 			);
 			path = VRTX;
 			sourceTree = "<group>";
@@ -109,6 +114,7 @@
 			isa = PBXGroup;
 			children = (
 				17E962E32BF7D0DD00F0A227 /* Float.swift */,
+				17ED9E642BFAA52300268A2A /* SIMD.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -187,7 +193,9 @@
 				174AA71A2BF9A384002B03A4 /* MetalView.swift in Sources */,
 				17E962E12BF7BFA500F0A227 /* InputsView.swift in Sources */,
 				174AA7162BF8D421002B03A4 /* LinearAlgebra.swift in Sources */,
+				17ED9E672BFAAA5400268A2A /* LabeledSlider.swift in Sources */,
 				17E962E42BF7D0DD00F0A227 /* Float.swift in Sources */,
+				17ED9E652BFAA52300268A2A /* SIMD.swift in Sources */,
 				17ED9E5F2BFA6CB900268A2A /* Geometry.swift in Sources */,
 				17ED9E612BFA6D2D00268A2A /* GeometryUIView.swift in Sources */,
 				17ED9E5D2BFA6CAC00268A2A /* Projection.swift in Sources */,

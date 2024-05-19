@@ -1,6 +1,10 @@
 import MetalKit
 import os
 
+extension Notification.Name {
+    static let drawMessage = Notification.Name("drawMessage")
+}
+
 class Renderer: NSObject, MTKViewDelegate {
     let logger = Logger(subsystem: "com.samhodak.VRTX", category: "Renderer")
     var view: MTKView
@@ -29,6 +33,19 @@ class Renderer: NSObject, MTKViewDelegate {
         metalView.enableSetNeedsDisplay = true
         
         createGraphicsPipelineState()
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(handleDrawMessage(_:)),
+                                               name: .drawMessage,
+                                               object: nil)
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    @objc func handleDrawMessage(_ notification: Notification) {
+        draw()
     }
     
     func updateProjectionMatrixBuffer() {

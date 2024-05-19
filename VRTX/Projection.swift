@@ -18,7 +18,7 @@ class Projection {
     var projectionFar: Float = 100.0
     
     init(size: CGSize) {
-        setProjectionMatrixAspect(for: size)
+        setProjectionMatrixAspect(for: CGSize(width: 500, height: 500))
     }
     
     func perspectiveFOVYRadians() -> Float {
