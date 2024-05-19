@@ -6,21 +6,7 @@ struct Vertex {
     var position: vector_float4
 }
 
-// This is a messy redundancy
-enum ProjectionProperty: String {
-    case FOVDenominator
-    case orthoLeft
-    case orthoRight
-    case orthoTop
-    case orthoBottom
-    case near
-    case far
-    
-    static func fromString(_ string: String) -> ProjectionProperty? {
-        return ProjectionProperty(rawValue: string)
-    }
-}
-
+@Observable
 class Projection {
     var projectionMatrix = simd_float4x4(1)
     var projectionMatrixBuffer: MTLBuffer?
@@ -67,25 +53,6 @@ class Projection {
         projectionMatrixBuffer = device.makeBuffer(bytes: &projectionMatrix,
                                                    length: MemoryLayout<simd_float4x4>.stride,
                                                    options: .storageModeShared)
-    }
-    
-    func updateProjection(property: ProjectionProperty, value: Float) {
-        switch property {
-        case .FOVDenominator:
-            perspectiveFOVDenominator = value
-        case .orthoLeft:
-            orthographicLeft = value
-        case .orthoRight:
-            orthographicRight = value
-        case .orthoTop:
-            orthographicTop = value
-        case .orthoBottom:
-            orthographicBottom = value
-        case .near:
-            projectionNear = value
-        case .far:
-            projectionFar = value
-        }
     }
 }
 
@@ -154,13 +121,13 @@ class Renderer: NSObject, MTKViewDelegate {
     var device: MTLDevice!
     var commandQueue: MTLCommandQueue!
     var pipelineState: MTLRenderPipelineState!
-    var geometry: Geometry!
-    var projection: Projection!
+    var geometry: Geometry
+    var projection: Projection
     
-    func setup(metalView: MTKView) {
+    init?(metalView: MTKView) {
         guard let device = MTLCreateSystemDefaultDevice(),
               let queue = device.makeCommandQueue() else {
-            return
+            return nil
         }
         
         self.view = metalView
@@ -168,6 +135,7 @@ class Renderer: NSObject, MTKViewDelegate {
         self.commandQueue = queue
         self.geometry = Geometry()
         self.projection = Projection()
+        super.init()
         
         projection.setProjectionMatrixAspect(for: view)
         metalView.device = device

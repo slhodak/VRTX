@@ -2,13 +2,6 @@ import SwiftUI
 import MetalKit
 import os
 
-/// I want to add a slider for every property that needs one
-/// i want to add that slider by name and associate it with the correct value automatically
-/// I want a single method that creates labeled sliders, and takes target properties etc as parameters
-///     i can use the label to name the slider in the dictionary, and then read that label to get it back out
-///     i could use a switch statement to alter the appropriate value based on the name of the slider...
-///         the switch could be exhaustive and safe if I make it choose from an enum
-
 struct InputsView: View {
     var renderer: Renderer
     let logger = Logger(subsystem: "com.samhodak.VRTX", category: "InputsView")
@@ -17,7 +10,7 @@ struct InputsView: View {
         ScrollView {
             VStack {
                 GeometryUIView(renderer: renderer)
-                ProjectionUIView(renderer: renderer)
+                ProjectionUIView(renderer: renderer, projection: renderer.projection)
                 Button("Redraw") {
                     renderer.draw()
                 }
@@ -28,53 +21,32 @@ struct InputsView: View {
 
 struct ProjectionUIView: View {
     let renderer: Renderer
+    @State var projection: Projection
+    // make projection a property here, wrangle the need to expose it in various places
+    // or use a publisher for update events
     let logger = Logger(subsystem: "com.samhodak.VRTX", category: "ProjectionUIViewController")
-    
-    @State var orthographicLeft: Float = 0
-    @State var orthographicRight: Float = 0
-    @State var orthographicTop: Float = 0
-    @State var orthographicBottom: Float = 0
-    @State var nearZ: Float = 0
-    @State var farZ: Float = 100.0
-    @State var useProjection: Bool = false
-    @State var usePerspectiveProjection: Bool = false
     
     var body: some View {
         VStack {
             HStack {
-                Toggle(isOn: $useProjection) {
+                Toggle(isOn: $projection.useProjection) {
                     Text("Projection")
                 }
-                .onChange(of: useProjection) {
-                    renderer.projection.useProjection = useProjection
+                .onChange(of: projection.useProjection) {
                     renderer.draw()
                 }
-                Toggle(isOn: $usePerspectiveProjection) {
+                Toggle(isOn: $projection.usePerspectiveProjection) {
                     Text("Ortho/Persp")
                 }
-                .onChange(of: usePerspectiveProjection) {
-                    renderer.projection.useProjection = usePerspectiveProjection
+                .onChange(of: projection.usePerspectiveProjection) {
                     renderer.draw()
                 }
             }
-            Slider(value: $orthographicTop) {
+            Slider(value: $projection.orthographicTop) {
                 Text("Orthographic Top")
-            }
-            .onChange(of: orthographicTop) {
-                sliderValueChanged(name: "orthographicTop", value: orthographicTop)
             }
             //... more sliders
         }
-    }
-    
-    func sliderValueChanged(name: String, value: Float) {
-        guard let property = ProjectionProperty.fromString(name) else {
-            logger.error("Failed to cast \(name) to ProjectionProperty")
-            return
-        }
-        
-        renderer.projection.updateProjection(property: property, value: value)
-        renderer.draw()
     }
 }
 
