@@ -157,10 +157,10 @@ class Renderer: NSObject, MTKViewDelegate {
     var geometry: Geometry!
     var projection: Projection!
     
-    init?(metalView: MTKView) {
+    func setup(metalView: MTKView) {
         guard let device = MTLCreateSystemDefaultDevice(),
               let queue = device.makeCommandQueue() else {
-            return nil
+            return
         }
         
         self.view = metalView
@@ -168,7 +168,6 @@ class Renderer: NSObject, MTKViewDelegate {
         self.commandQueue = queue
         self.geometry = Geometry()
         self.projection = Projection()
-        super.init()
         
         projection.setProjectionMatrixAspect(for: view)
         metalView.device = device

@@ -8,31 +8,28 @@
 
 /* Begin PBXBuildFile section */
 		174AA7162BF8D421002B03A4 /* LinearAlgebra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 174AA7152BF8D421002B03A4 /* LinearAlgebra.swift */; };
-		17E962C92BF6D87E00F0A227 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17E962C82BF6D87E00F0A227 /* AppDelegate.swift */; };
-		17E962CB2BF6D87E00F0A227 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17E962CA2BF6D87E00F0A227 /* ViewController.swift */; };
+		174AA7182BF99B7E002B03A4 /* VRTXApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 174AA7172BF99B7E002B03A4 /* VRTXApp.swift */; };
+		174AA71A2BF9A384002B03A4 /* MetalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 174AA7192BF9A384002B03A4 /* MetalView.swift */; };
 		17E962CD2BF6D87F00F0A227 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 17E962CC2BF6D87F00F0A227 /* Assets.xcassets */; };
-		17E962D02BF6D87F00F0A227 /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 17E962CF2BF6D87F00F0A227 /* Base */; };
 		17E962DD2BF6E43300F0A227 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 17E962DC2BF6E43300F0A227 /* Shaders.metal */; };
 		17E962DF2BF7BF5800F0A227 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17E962DE2BF7BF5800F0A227 /* Renderer.swift */; };
-		17E962E12BF7BFA500F0A227 /* InputsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17E962E02BF7BFA500F0A227 /* InputsViewController.swift */; };
+		17E962E12BF7BFA500F0A227 /* InputsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17E962E02BF7BFA500F0A227 /* InputsView.swift */; };
 		17E962E42BF7D0DD00F0A227 /* Float.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17E962E32BF7D0DD00F0A227 /* Float.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		174AA7152BF8D421002B03A4 /* LinearAlgebra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinearAlgebra.swift; sourceTree = "<group>"; };
+		174AA7172BF99B7E002B03A4 /* VRTXApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VRTXApp.swift; sourceTree = "<group>"; };
+		174AA7192BF9A384002B03A4 /* MetalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalView.swift; sourceTree = "<group>"; };
 		17E962C52BF6D87E00F0A227 /* VRTX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VRTX.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		17E962C82BF6D87E00F0A227 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		17E962CA2BF6D87E00F0A227 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		17E962CC2BF6D87F00F0A227 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		17E962CF2BF6D87F00F0A227 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		17E962D12BF6D87F00F0A227 /* VRTX.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = VRTX.entitlements; sourceTree = "<group>"; };
 		17E962D82BF6E22800F0A227 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
 		17E962DA2BF6E23000F0A227 /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
 		17E962DC2BF6E43300F0A227 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		17E962DE2BF7BF5800F0A227 /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
-		17E962E02BF7BFA500F0A227 /* InputsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputsViewController.swift; sourceTree = "<group>"; };
+		17E962E02BF7BFA500F0A227 /* InputsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputsView.swift; sourceTree = "<group>"; };
 		17E962E32BF7D0DD00F0A227 /* Float.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Float.swift; sourceTree = "<group>"; };
-		17E962E52BF808F700F0A227 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,15 +71,13 @@
 		17E962C72BF6D87E00F0A227 /* VRTX */ = {
 			isa = PBXGroup;
 			children = (
-				17E962E52BF808F700F0A227 /* Info.plist */,
-				17E962C82BF6D87E00F0A227 /* AppDelegate.swift */,
-				17E962E02BF7BFA500F0A227 /* InputsViewController.swift */,
+				174AA7172BF99B7E002B03A4 /* VRTXApp.swift */,
+				174AA7192BF9A384002B03A4 /* MetalView.swift */,
+				17E962E02BF7BFA500F0A227 /* InputsView.swift */,
 				17E962DE2BF7BF5800F0A227 /* Renderer.swift */,
-				17E962CA2BF6D87E00F0A227 /* ViewController.swift */,
 				174AA7142BF8D410002B03A4 /* GraphicsUtil */,
 				17E962E22BF7D0D100F0A227 /* Extension */,
 				17E962CC2BF6D87F00F0A227 /* Assets.xcassets */,
-				17E962CE2BF6D87F00F0A227 /* Main.storyboard */,
 				17E962D12BF6D87F00F0A227 /* VRTX.entitlements */,
 				17E962DC2BF6E43300F0A227 /* Shaders.metal */,
 			);
@@ -165,7 +160,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				17E962CD2BF6D87F00F0A227 /* Assets.xcassets in Resources */,
-				17E962D02BF6D87F00F0A227 /* Base in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -177,27 +171,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				17E962DF2BF7BF5800F0A227 /* Renderer.swift in Sources */,
-				17E962E12BF7BFA500F0A227 /* InputsViewController.swift in Sources */,
+				174AA71A2BF9A384002B03A4 /* MetalView.swift in Sources */,
+				17E962E12BF7BFA500F0A227 /* InputsView.swift in Sources */,
 				174AA7162BF8D421002B03A4 /* LinearAlgebra.swift in Sources */,
 				17E962E42BF7D0DD00F0A227 /* Float.swift in Sources */,
-				17E962CB2BF6D87E00F0A227 /* ViewController.swift in Sources */,
+				174AA7182BF99B7E002B03A4 /* VRTXApp.swift in Sources */,
 				17E962DD2BF6E43300F0A227 /* Shaders.metal in Sources */,
-				17E962C92BF6D87E00F0A227 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXVariantGroup section */
-		17E962CE2BF6D87F00F0A227 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				17E962CF2BF6D87F00F0A227 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		17E962D22BF6D87F00F0A227 /* Debug */ = {
@@ -332,7 +315,6 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = VRTX/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INFOPLIST_KEY_NSMainStoryboardFile = Main;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -360,7 +342,6 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = VRTX/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INFOPLIST_KEY_NSMainStoryboardFile = Main;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
