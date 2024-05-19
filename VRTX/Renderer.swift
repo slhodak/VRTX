@@ -56,6 +56,7 @@ class Projection {
     }
 }
 
+@Observable
 class Geometry {
     let logger = Logger(subsystem: "com.samhodak.VRTX", category: "Geometry")
     var vertices: [Vertex] = [
@@ -65,18 +66,17 @@ class Geometry {
     ]
     var vertexBuffer: MTLBuffer!
     
-    func updateVertex(index: Int, axis: String, value: Float) {
-        switch axis {
-        case "x":
-            vertices[index].position.x = value
-        case "y":
-            vertices[index].position.y = value
-        case "z":
-            vertices[index].position.z = value
-        default:
-            logger.error("Could not update vertex: unrecognized axis")
-            break
+    func updateVertices(_ vertices: [[Float]]) {
+        for (i, vertex) in vertices.enumerated() {
+            guard vertex.count == 3 else { continue }
+            
+            let position = vector_float4(x: vertex[0],
+                                         y: vertex[1],
+                                         z: vertex[2],
+                                         w: 1)
+            self.vertices[i] = Vertex(position: position)
         }
+        logger.debug("Update vertices: \(self.vertices)")
     }
     
     func setupVertexBuffer(for device: MTLDevice) {
@@ -117,9 +117,9 @@ class Geometry {
 
 class Renderer: NSObject, MTKViewDelegate {
     let logger = Logger(subsystem: "com.samhodak.VRTX", category: "Renderer")
-    var view: MTKView!
-    var device: MTLDevice!
-    var commandQueue: MTLCommandQueue!
+    var view: MTKView
+    var device: MTLDevice
+    var commandQueue: MTLCommandQueue
     var pipelineState: MTLRenderPipelineState!
     var geometry: Geometry
     var projection: Projection

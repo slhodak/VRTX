@@ -9,7 +9,7 @@ struct InputsView: View {
     var body: some View {
         ScrollView {
             VStack {
-                GeometryUIView(renderer: renderer)
+                GeometryUIView(renderer: renderer, geometry: renderer.geometry)
                 ProjectionUIView(renderer: renderer, projection: renderer.projection)
                 Button("Redraw") {
                     renderer.draw()
@@ -27,8 +27,8 @@ struct ProjectionUIView: View {
     let logger = Logger(subsystem: "com.samhodak.VRTX", category: "ProjectionUIViewController")
     
     var body: some View {
-        VStack {
-            HStack {
+        VStack(alignment: .leading) {
+            HStack() {
                 Toggle(isOn: $projection.useProjection) {
                     Text("Projection")
                 }
@@ -47,24 +47,42 @@ struct ProjectionUIView: View {
             }
             //... more sliders
         }
+        .padding()
     }
 }
 
 struct GeometryUIView: View {
     let logger = Logger(subsystem: "com.samhodak.VRTX", category: "GeometryUIViewController")
     let renderer: Renderer
-    @State var vertexValue: Float = 0.5
+    @State var geometry: Geometry
+    @State var triangleText: String = ""
+    @State var parseError: String?
     
     var body: some View {
         VStack {
-            Slider(value: $vertexValue) {
-                Text("Vertex Value")
+            /// A 2D array to create a triangle from
+            HStack {
+                Text("Triangle Vertices")
+                TextField("Enter your 3x3 array of vertices", text: $triangleText, onCommit: parseTriangleInput)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
             }
-            .onChange(of: vertexValue) {
-                self.logger.debug("changed vertex value to \(vertexValue)")
-//                renderer.geometry.updateVertex(index: index, axis: String(nameParts[1]), value: vertexValue)
-//                renderer.draw()
+            .padding()
+            
+            if parseError != nil {
+                Text(parseError!)
             }
+        }
+    }
+
+    func parseTriangleInput() {
+        let jsonData = Data(triangleText.utf8)
+        let decoder = JSONDecoder()
+        do {
+            let float2DArray = try decoder.decode([[Float]].self, from: jsonData)
+            geometry.updateVertices(float2DArray)
+            parseError = nil
+        } catch {
+            parseError = "Failed to parse JSON: \(error)"
         }
     }
 }
