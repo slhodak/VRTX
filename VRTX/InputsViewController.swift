@@ -19,22 +19,16 @@ enum ProjectionSlider: String {
 }
 
 protocol LabeledSliderDelegate: AnyObject {
-    func vertexSliderValueChanged(name: String, value: Float)
-    func projectionSliderValueChanged(name: String, value: Float)
+    func sliderValueChanged(name: String, value: Float)
 }
 
 class LabeledSlider {
     /// Initialize everything to empty here because we need to use self in the setup function, but cannot use it in init()
     var name = ""
-    var type: SliderGroup
     var label = NSTextField()
     var slider = NSSlider()
     var valueLabel = NSTextField()
     var delegate: LabeledSliderDelegate?
-    
-    init(type: SliderGroup) {
-        self.type = type
-    }
     
     func setup(view: NSView, topAnchor: NSLayoutYAxisAnchor, name: String, value: Double, minValue: Double, maxValue: Double) {
         self.name = name
@@ -72,28 +66,14 @@ class LabeledSlider {
     
     @objc func valueChanged(_ sender: NSSlider) {
         let value = sender.floatValue.rounded(to: 2)
-        switch self.type {
-        case .vertexPosition:
-            delegate?.vertexSliderValueChanged(name: name, value: value)
-        case .projectionMatrix:
-            delegate?.projectionSliderValueChanged(name: name, value: value)
-        }
+        delegate?.sliderValueChanged(name: name, value: value)
     }
 }
 
-enum SliderGroup {
-    case vertexPosition
-    case projectionMatrix
-}
-
-class InputsViewController: NSViewController, LabeledSliderDelegate {
+class ProjectionUIViewController: NSViewController, LabeledSliderDelegate {
+    let logger = Logger(subsystem: "com.samhodak.VRTX", category: "ProjectionUIViewController")
     let renderer: Renderer
-    var scrollView: NSScrollView!
-    var contentView: NSView!
-    let logger = Logger(subsystem: "com.samhodak.VRTX", category: "InputsViewController")
-    
-    var labeledSliders: [SliderGroup: [String: LabeledSlider]] = [:]
-    var redrawButton: NSButton!
+    var labeledSliders: [String: LabeledSlider] = [:]
     var projectionMatrixSwitch: NSSwitch!
     var projectionMatrixTypeSwitch: NSSwitch!
     
@@ -111,89 +91,27 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
         fatalError("init(nibName:bundle:) has not been implemented")
     }
     
-    func vertexSliderValueChanged(name: String, value: Float) {
-        labeledSliders[.vertexPosition]?[name]?.valueLabel.stringValue = String(value)
+    override func viewDidLoad() {
+        super.viewDidLoad()
         
-        let nameParts = name.split(separator: "_")
-        guard let index = Int(nameParts[0]) else {
-            logger.error("Name part \(nameParts[0]) cast to Int failed")
-            return
-        }
-        renderer.geometry.updateVertex(index: index, axis: String(nameParts[1]), value: value)
-        renderer.draw()
+        var topAnchor = view.topAnchor
+        topAnchor = setupLabeledSwitch(name: "Projection", topAnchor: topAnchor, action: #selector(toggleProjectionSwitch(_:)), value: renderer.projection.useProjection)
+        topAnchor = setupLabeledSwitch(name: "Ortho/Persp", topAnchor: topAnchor, action: #selector(toggleProjectionTypeSwitch(_:)), value: renderer.projection.usePerspectiveProjection)
+        _ = setupProjectionMatrixSliders(topAnchor: topAnchor)
     }
     
-    func projectionSliderValueChanged(name: String, value: Float) {
+    func sliderValueChanged(name: String, value: Float) {
         guard let property = ProjectionProperty.fromString(name) else {
             logger.error("Failed to cast \(name) to ProjectionProperty")
             return
         }
         
-        labeledSliders[.projectionMatrix]?[name]?.valueLabel.stringValue = String(value)
+        labeledSliders[name]?.valueLabel.stringValue = String(value)
         renderer.projection.updateProjection(property: property, value: value)
         renderer.draw()
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        scrollView = NSScrollView(frame: view.bounds)
-        scrollView.hasVerticalScroller = true
-        contentView = NSView(frame: NSRect(x: 0, y: 0, width: scrollView.bounds.width, height: 1000))
-        scrollView.documentView = contentView
-        view.addSubview(scrollView)
-        
-        var topAnchor = contentView.topAnchor
-        topAnchor = setupVertexSliders(topAnchor: topAnchor)
-        topAnchor = setupLabeledSwitch(name: "Projection", topAnchor: topAnchor, action: #selector(toggleProjectionSwitch(_:)), value: renderer.projection.useProjection)
-        topAnchor = setupLabeledSwitch(name: "Ortho/Persp", topAnchor: topAnchor, action: #selector(toggleProjectionTypeSwitch(_:)), value: renderer.projection.usePerspectiveProjection)
-        topAnchor = setupProjectionMatrixSliders(topAnchor: topAnchor)
-        _ = setupRedrawButton(topAnchor: topAnchor)
-    }
-    
-    func setupVertexSliders(topAnchor: NSLayoutYAxisAnchor) -> NSLayoutYAxisAnchor {
-        let axisLabels = ["x", "y", "z"]
-        var lastTopAnchor = topAnchor
-        
-        if labeledSliders[.vertexPosition] == nil {
-            labeledSliders[.vertexPosition] = [:]
-        }
-        
-        for (i, vertex) in renderer.geometry.vertices.enumerated() {
-            for axisLabel in axisLabels {
-                let name = "\(i)_\(axisLabel)"
-                let labeledSlider = LabeledSlider(type: .vertexPosition)
-                var vertexAxisValue: Float = 0.0
-                switch axisLabel {
-                case "x":
-                    vertexAxisValue = vertex.position.x
-                case "y":
-                    vertexAxisValue = vertex.position.y
-                case "z":
-                    vertexAxisValue = vertex.position.z
-                default:
-                    break
-                }
-                labeledSlider.setup(view: contentView,
-                                    topAnchor: lastTopAnchor,
-                                    name: name,
-                                    value: Double(vertexAxisValue),
-                                    minValue: -1.0,
-                                    maxValue: 1.0)
-                
-                labeledSlider.delegate = self
-                labeledSliders[.vertexPosition]![name] = labeledSlider
-                lastTopAnchor = labeledSlider.slider.bottomAnchor
-            }
-        }
-        
-        return lastTopAnchor
-    }
-    
     func setupProjectionMatrixSliders(topAnchor: NSLayoutYAxisAnchor) -> NSLayoutYAxisAnchor {
-        if labeledSliders[.projectionMatrix] == nil {
-            labeledSliders[.projectionMatrix] = [:]
-        }
-        
         var bottomAnchor = addProjectionMatrixSlider(property: .FOVDenominator, topAnchor: topAnchor, value: renderer.projection.perspectiveFOVDenominator, maxValue: 16)
         bottomAnchor = addProjectionMatrixSlider(property: .orthoLeft, topAnchor: bottomAnchor)
         bottomAnchor = addProjectionMatrixSlider(property: .orthoRight, topAnchor: bottomAnchor)
@@ -206,15 +124,15 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
     }
     
     func addProjectionMatrixSlider(property: ProjectionProperty, topAnchor: NSLayoutYAxisAnchor, value: Float = 0, minValue: Float = 0, maxValue: Float = 100) -> NSLayoutYAxisAnchor {
-        let labeledSlider = LabeledSlider(type: .projectionMatrix)
-        labeledSlider.setup(view: contentView,
+        let labeledSlider = LabeledSlider()
+        labeledSlider.setup(view: view,
                             topAnchor: topAnchor,
                             name: property.rawValue,
                             value: Double(value),
                             minValue: Double(minValue),
                             maxValue: Double(maxValue))
         labeledSlider.delegate = self
-        labeledSliders[.projectionMatrix]![property.rawValue] = labeledSlider
+        labeledSliders[property.rawValue] = labeledSlider
         
         return labeledSlider.slider.bottomAnchor
     }
@@ -222,11 +140,11 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
     func setupLabeledSwitch(name: String, topAnchor: NSLayoutYAxisAnchor, action: Selector, value: Bool) -> NSLayoutYAxisAnchor {
         let label = NSTextField(labelWithString: name)
         label.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(label)
+        view.addSubview(label)
         
         NSLayoutConstraint.activate([
             label.topAnchor.constraint(equalTo: topAnchor, constant: 20),
-            label.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            label.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             label.widthAnchor.constraint(equalToConstant: 100)
         ])
         
@@ -234,7 +152,7 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
         projectionMatrixSwitch.state = value ? .on : .off
         projectionMatrixSwitch.target = self
         projectionMatrixSwitch.action = action
-        contentView.addSubview(projectionMatrixSwitch)
+        view.addSubview(projectionMatrixSwitch)
         projectionMatrixSwitch.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
@@ -254,22 +172,141 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
         renderer.projection.usePerspectiveProjection = sender.state == .on
         renderer.draw()
     }
+}
+
+class GeometryUIViewController: NSViewController, LabeledSliderDelegate {
+    let logger = Logger(subsystem: "com.samhodak.VRTX", category: "GeometryUIViewController")
+    let renderer: Renderer
+    var labeledSliders: [String: LabeledSlider] = [:]
     
-    func setupRedrawButton(topAnchor: NSLayoutYAxisAnchor) -> NSLayoutYAxisAnchor {
-        // Create a button to apply changes and redraw
-        redrawButton = NSButton(title: "Redraw", target: self, action: #selector(redraw))
-        redrawButton.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(redrawButton)
-        
-        NSLayoutConstraint.activate([
-            redrawButton.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            redrawButton.topAnchor.constraint(equalTo: topAnchor, constant: 10)
-        ])
-        
-        return redrawButton.bottomAnchor
+    init(renderer: Renderer) {
+        self.renderer = renderer
+        super.init(nibName: nil, bundle: nil)
     }
     
-    @objc func redraw() {
+    /// Must implement this method if and only if you plan to instantiate this ViewController in the Storyboard
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        fatalError("init(nibName:bundle:) has not been implemented")
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        setupVertexSliders(topAnchor: view.topAnchor)
+    }
+    
+    func sliderValueChanged(name: String, value: Float) {
+        labeledSliders[name]?.valueLabel.stringValue = String(value)
+        
+        let nameParts = name.split(separator: "_")
+        guard let index = Int(nameParts[0]) else {
+            logger.error("Name part \(nameParts[0]) cast to Int failed")
+            return
+        }
+        renderer.geometry.updateVertex(index: index, axis: String(nameParts[1]), value: value)
         renderer.draw()
     }
+    
+    func setupVertexSliders(topAnchor: NSLayoutYAxisAnchor) {
+        let axisLabels = ["x", "y", "z"]
+        var lastTopAnchor = view.topAnchor
+        
+        for (i, vertex) in renderer.geometry.vertices.enumerated() {
+            for axisLabel in axisLabels {
+                let name = "\(i)_\(axisLabel)"
+                let labeledSlider = LabeledSlider()
+                var vertexAxisValue: Float = 0.0
+                switch axisLabel {
+                case "x":
+                    vertexAxisValue = vertex.position.x
+                case "y":
+                    vertexAxisValue = vertex.position.y
+                case "z":
+                    vertexAxisValue = vertex.position.z
+                default:
+                    break
+                }
+                labeledSlider.setup(view: view,
+                                    topAnchor: lastTopAnchor,
+                                    name: name,
+                                    value: Double(vertexAxisValue),
+                                    minValue: -1.0,
+                                    maxValue: 1.0)
+                
+                labeledSlider.delegate = self
+                labeledSliders[name] = labeledSlider
+                lastTopAnchor = labeledSlider.slider.bottomAnchor
+            }
+        }
+    }
+}
+
+class InputsViewController: NSViewController {
+    let renderer: Renderer
+    var scrollView: NSScrollView!
+    var contentView: NSView!
+    var geometryUIViewController: GeometryUIViewController!
+    var projectionUIViewController: ProjectionUIViewController!
+    
+    let logger = Logger(subsystem: "com.samhodak.VRTX", category: "InputsViewController")
+    
+    var redrawButton: NSButton!
+    
+    init(renderer: Renderer) {
+        self.renderer = renderer
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    /// Must implement this method if and only if you plan to instantiate this ViewController in the Storyboard
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        fatalError("init(nibName:bundle:) has not been implemented")
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        geometryUIViewController = GeometryUIViewController(renderer: renderer)
+        projectionUIViewController = ProjectionUIViewController(renderer: renderer)
+        scrollView = NSScrollView(frame: view.bounds)
+        scrollView.hasVerticalScroller = true
+        contentView = NSView(frame: NSRect(x: 0, y: 0, width: scrollView.bounds.width, height: 1000))
+        contentView.addSubview(geometryUIViewController.view)
+        
+        NSLayoutConstraint.activate([
+            geometryUIViewController.view.topAnchor.constraint(equalTo: contentView.topAnchor)
+        ])
+        
+//        contentView.addSubview(projectionUIViewController.view)
+//        
+//        NSLayoutConstraint.activate([
+//            projectionUIViewController.view.topAnchor.constraint(equalTo: geometryUIViewController.view.bottomAnchor)
+//        ])
+//        setupRedrawButton(topAnchor: projectionUIViewController.view.bottomAnchor)
+        
+        scrollView.documentView = contentView
+        view.addSubview(scrollView)
+    }
+    
+//    func setupRedrawButton(topAnchor: NSLayoutYAxisAnchor) {
+//        // Create a button to apply changes and redraw
+//        redrawButton = NSButton(title: "Redraw", target: self, action: #selector(redraw))
+//        redrawButton.translatesAutoresizingMaskIntoConstraints = false
+//        contentView.addSubview(redrawButton)
+//        
+//        NSLayoutConstraint.activate([
+//            redrawButton.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+//            redrawButton.topAnchor.constraint(equalTo: topAnchor, constant: 10)
+//        ])
+//    }
+//    
+//    @objc func redraw() {
+//        renderer.draw()
+//    }
 }
