@@ -7,8 +7,8 @@ class Projection {
     var projectionMatrix = simd_float4x4(1)
     var projectionMatrixBuffer: MTLBuffer?
     var projectionPerspectiveAspect: Float!
-    var usePerspectiveProjection: Bool = true
-    var useProjection: Bool = true
+    var usePerspectiveProjection: Bool = false
+    var useProjection: Bool = false
     var perspectiveFOVDenominator: Float = 4.0
     var orthographicLeft: Float = 0
     var orthographicRight: Float = 0

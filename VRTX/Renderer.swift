@@ -78,11 +78,6 @@ class Renderer: NSObject, MTKViewDelegate {
         }
         
         renderEncoder.setRenderPipelineState(pipelineState)
-//        var vertexData = self.vertexData
-//        if useProjection && usePerspectiveProjection {
-//            logger.debug("Using scaled vertex data")
-//            vertexData = scale(vertices: vertexData, by: 1)
-//        }
         geometry.updateVertexBuffer(for: device)
         renderEncoder.setVertexBuffer(geometry.vertexBuffer, offset: 0, index: 0)
         
