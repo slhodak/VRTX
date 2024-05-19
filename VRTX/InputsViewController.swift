@@ -119,8 +119,8 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
             logger.error("Name part \(nameParts[0]) cast to Int failed")
             return
         }
-        logger.info("vertex slider value changed")
-        renderer.updateVertex(index: index, axis: String(nameParts[1]), value: value)
+        renderer.geometry.updateVertex(index: index, axis: String(nameParts[1]), value: value)
+        renderer.draw()
     }
     
     func projectionSliderValueChanged(name: String, value: Float) {
@@ -130,7 +130,8 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
         }
         
         labeledSliders[.projectionMatrix]?[name]?.valueLabel.stringValue = String(value)
-        renderer.updateProjection(property: property, value: value)
+        renderer.projection.updateProjection(property: property, value: value)
+        renderer.draw()
     }
     
     override func viewDidLoad() {
@@ -143,8 +144,8 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
         
         var topAnchor = contentView.topAnchor
         topAnchor = setupVertexSliders(topAnchor: topAnchor)
-        topAnchor = setupLabeledSwitch(name: "Projection", topAnchor: topAnchor, action: #selector(toggleProjectionSwitch(_:)), value: renderer.useProjection)
-        topAnchor = setupLabeledSwitch(name: "Ortho/Persp", topAnchor: topAnchor, action: #selector(toggleProjectionTypeSwitch(_:)), value: renderer.usePerspectiveProjection)
+        topAnchor = setupLabeledSwitch(name: "Projection", topAnchor: topAnchor, action: #selector(toggleProjectionSwitch(_:)), value: renderer.projection.useProjection)
+        topAnchor = setupLabeledSwitch(name: "Ortho/Persp", topAnchor: topAnchor, action: #selector(toggleProjectionTypeSwitch(_:)), value: renderer.projection.usePerspectiveProjection)
         topAnchor = setupProjectionMatrixSliders(topAnchor: topAnchor)
         _ = setupRedrawButton(topAnchor: topAnchor)
     }
@@ -157,7 +158,7 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
             labeledSliders[.vertexPosition] = [:]
         }
         
-        for (i, vertex) in renderer.vertexData.enumerated() {
+        for (i, vertex) in renderer.geometry.vertices.enumerated() {
             for axisLabel in axisLabels {
                 let name = "\(i)_\(axisLabel)"
                 let labeledSlider = LabeledSlider(type: .vertexPosition)
@@ -193,13 +194,13 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
             labeledSliders[.projectionMatrix] = [:]
         }
         
-        var bottomAnchor = addProjectionMatrixSlider(property: .FOVDenominator, topAnchor: topAnchor, value: renderer.perspectiveFOVDenominator, maxValue: 16)
+        var bottomAnchor = addProjectionMatrixSlider(property: .FOVDenominator, topAnchor: topAnchor, value: renderer.projection.perspectiveFOVDenominator, maxValue: 16)
         bottomAnchor = addProjectionMatrixSlider(property: .orthoLeft, topAnchor: bottomAnchor)
         bottomAnchor = addProjectionMatrixSlider(property: .orthoRight, topAnchor: bottomAnchor)
         bottomAnchor = addProjectionMatrixSlider(property: .orthoTop, topAnchor: bottomAnchor)
         bottomAnchor = addProjectionMatrixSlider(property: .orthoBottom, topAnchor: bottomAnchor)
-        bottomAnchor = addProjectionMatrixSlider(property: .near, topAnchor: bottomAnchor, value: renderer.projectionNear)
-        bottomAnchor = addProjectionMatrixSlider(property: .far, topAnchor: bottomAnchor, value: renderer.projectionFar)
+        bottomAnchor = addProjectionMatrixSlider(property: .near, topAnchor: bottomAnchor, value: renderer.projection.projectionNear)
+        bottomAnchor = addProjectionMatrixSlider(property: .far, topAnchor: bottomAnchor, value: renderer.projection.projectionFar)
         
         return bottomAnchor
     }
@@ -245,11 +246,13 @@ class InputsViewController: NSViewController, LabeledSliderDelegate {
     }
     
     @objc func toggleProjectionSwitch(_ sender: NSSwitch) {
-        renderer.useProjection = sender.state == .on
+        renderer.projection.useProjection = sender.state == .on
+        renderer.draw()
     }
     
     @objc func toggleProjectionTypeSwitch(_ sender: NSSwitch) {
-        renderer.usePerspectiveProjection = sender.state == .on
+        renderer.projection.usePerspectiveProjection = sender.state == .on
+        renderer.draw()
     }
     
     func setupRedrawButton(topAnchor: NSLayoutYAxisAnchor) -> NSLayoutYAxisAnchor {
