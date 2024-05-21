@@ -22,8 +22,18 @@ struct GeometryUIView: View {
                     NotificationCenter.default.post(name: .drawMessage, object: nil)
                 }
             
-            LabeledSlider(name: "Translate X", value: $geometry.translateX, min: 0.0, max: 10.0)
+            LabeledSlider(name: "Translate X", value: $geometry.translateX, min: -2.0, max: 2.0)
                 .onChange(of: geometry.translateX) {
+                    NotificationCenter.default.post(name: .drawMessage, object: nil)
+                }
+            
+            LabeledSlider(name: "Translate Y", value: $geometry.translateY, min: -2.0, max: 2.0)
+                .onChange(of: geometry.translateY) {
+                    NotificationCenter.default.post(name: .drawMessage, object: nil)
+                }
+            
+            LabeledSlider(name: "Translate Z", value: $geometry.translateZ, min: -0.5, max: 0.5)
+                .onChange(of: geometry.translateZ) {
                     NotificationCenter.default.post(name: .drawMessage, object: nil)
                 }
             

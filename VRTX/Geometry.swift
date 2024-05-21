@@ -27,6 +27,8 @@ class Geometry {
     var vertexBuffer: MTLBuffer!
     var scale: Float = 1.0
     var translateX: Float = 0.0
+    var translateY: Float = 0.0
+    var translateZ: Float = 0.0
     
     func updateVertices(_ vertices: [[Float]]) {
         for (i, vertex) in vertices.enumerated() {
@@ -84,10 +86,28 @@ class Geometry {
         return translatedVertices
     }
     
+    func translateY(_ vertices: [Vertex]) -> [Vertex] {
+        // move all vertices along the x axis
+        let translatedVertices = vertices.map { vertex in
+            Vertex(position: vertex.position + [0, translateY, 0, 0])
+        }
+        return translatedVertices
+    }
+    
+    func translateZ(_ vertices: [Vertex]) -> [Vertex] {
+        // move all vertices along the x axis
+        let translatedVertices = vertices.map { vertex in
+            Vertex(position: vertex.position + [0, 0, translateZ, 0])
+        }
+        return translatedVertices
+    }
+    
     func transform(_ vertices: [Vertex]) -> [Vertex] {
         /// In the future, can apply other transformations here
         var transformedVertices = scale(vertices)
         transformedVertices = translateX(transformedVertices)
+        transformedVertices = translateY(transformedVertices)
+        transformedVertices = translateZ(transformedVertices)
         return transformedVertices
     }
 }
