@@ -5,6 +5,7 @@ import os
 
 struct Vertex {
     var position: vector_float4
+    var color: vector_float4
     
     func scale(by scalar: Float) -> Vertex {
         return Vertex(position: [
@@ -12,7 +13,9 @@ struct Vertex {
             position.y * scalar,
             position.z * scalar,
             position.w
-        ])
+        ],
+                      color: self.color
+        )
     }
 }
 
@@ -20,9 +23,9 @@ struct Vertex {
 class Geometry {
     let logger = Logger(subsystem: "com.samhodak.VRTX", category: "Geometry")
     var vertices: [Vertex] = [
-        Vertex(position: [0.0, -1.0, 0.5, 1.0]),
-        Vertex(position: [0.5, 0.0, 0.5, 1.0]),
-        Vertex(position: [1.0, -1.0, 0.5, 1.0]),
+        Vertex(position: [0.0, -1.0, 0.5, 1.0], color: [1, 0, 0, 1]),
+        Vertex(position: [0.5, 0.0, 0.5, 1.0], color: [0, 1, 0, 1]),
+        Vertex(position: [1.0, -1.0, 0.5, 1.0], color: [0, 0, 1, 1]),
     ]
     var vertexBuffer: MTLBuffer!
     var scale: Float = 1.0
@@ -38,7 +41,8 @@ class Geometry {
                                          y: vertex[1],
                                          z: vertex[2],
                                          w: 1)
-            self.vertices[i] = Vertex(position: position)
+            let color = self.vertices[i].color
+            self.vertices[i] = Vertex(position: position, color: color)
         }
         logger.debug("Updated vertices: \(self.vertices)")
     }
@@ -81,7 +85,7 @@ class Geometry {
     func translateX(_ vertices: [Vertex]) -> [Vertex] {
         // move all vertices along the x axis
         let translatedVertices = vertices.map { vertex in
-            Vertex(position: vertex.position + [translateX, 0, 0, 0])
+            Vertex(position: vertex.position + [translateX, 0, 0, 0], color: vertex.color)
         }
         return translatedVertices
     }
@@ -89,7 +93,7 @@ class Geometry {
     func translateY(_ vertices: [Vertex]) -> [Vertex] {
         // move all vertices along the x axis
         let translatedVertices = vertices.map { vertex in
-            Vertex(position: vertex.position + [0, translateY, 0, 0])
+            Vertex(position: vertex.position + [0, translateY, 0, 0], color: vertex.color)
         }
         return translatedVertices
     }
@@ -97,7 +101,7 @@ class Geometry {
     func translateZ(_ vertices: [Vertex]) -> [Vertex] {
         // move all vertices along the x axis
         let translatedVertices = vertices.map { vertex in
-            Vertex(position: vertex.position + [0, 0, translateZ, 0])
+            Vertex(position: vertex.position + [0, 0, translateZ, 0], color: vertex.color)
         }
         return translatedVertices
     }
