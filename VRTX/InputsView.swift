@@ -10,9 +10,6 @@ struct InputsView: View {
             VStack {
                 GeometryUIView(renderer: renderer, geometry: renderer.geometry)
                 ProjectionUIView(renderer: renderer, projection: renderer.projection)
-                Button("Redraw") {
-                    renderer.draw()
-                }
             }
         }
     }
