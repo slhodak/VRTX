@@ -14,6 +14,14 @@ struct ProjectionUIView: View {
                 }
                 Spacer()
             }
+            
+            Text("Current Projection Matrix").fontWeight(.bold)
+            Text(projection.projectionMatrix.toString())
+            Matrix4x4View(mat: $projection.projectionMatrix)
+                .onChange(of: projection.projectionMatrix) {
+                    NotificationCenter.default.post(name: .drawMessage, object: nil)
+                }
+            
             if projection.useProjection {
                 Toggle(isOn: $projection.usePerspectiveProjection) {
                     Text("Orthographic / Perspective")
@@ -29,9 +37,6 @@ struct ProjectionUIView: View {
                 LabeledSlider(name: "Orthographic Right", value: $projection.orthographicRight)
                 LabeledSlider(name: "Near Z", value: $projection.projectionNear)
                 LabeledSlider(name: "Far Z", value: $projection.projectionFar, max: 100.0, step: 5)
-                
-                Text("Current Projection Matrix").fontWeight(.bold)
-                Text(projection.projectionMatrix.toString())
             }
         }
         .padding()

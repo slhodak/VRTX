@@ -10,6 +10,7 @@
 		174AA7162BF8D421002B03A4 /* LinearAlgebra.swift in Sources */ = {isa = PBXBuildFile; fileRef = 174AA7152BF8D421002B03A4 /* LinearAlgebra.swift */; };
 		174AA7182BF99B7E002B03A4 /* VRTXApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 174AA7172BF99B7E002B03A4 /* VRTXApp.swift */; };
 		174AA71A2BF9A384002B03A4 /* MetalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 174AA7192BF9A384002B03A4 /* MetalView.swift */; };
+		179B2FB12BFFC06000F02A3A /* MatrixViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 179B2FB02BFFC06000F02A3A /* MatrixViews.swift */; };
 		17E962CD2BF6D87F00F0A227 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 17E962CC2BF6D87F00F0A227 /* Assets.xcassets */; };
 		17E962DD2BF6E43300F0A227 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 17E962DC2BF6E43300F0A227 /* Shaders.metal */; };
 		17E962DF2BF7BF5800F0A227 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17E962DE2BF7BF5800F0A227 /* Renderer.swift */; };
@@ -27,6 +28,7 @@
 		174AA7152BF8D421002B03A4 /* LinearAlgebra.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinearAlgebra.swift; sourceTree = "<group>"; };
 		174AA7172BF99B7E002B03A4 /* VRTXApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VRTXApp.swift; sourceTree = "<group>"; };
 		174AA7192BF9A384002B03A4 /* MetalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalView.swift; sourceTree = "<group>"; };
+		179B2FB02BFFC06000F02A3A /* MatrixViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatrixViews.swift; sourceTree = "<group>"; };
 		17E962C52BF6D87E00F0A227 /* VRTX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VRTX.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		17E962CC2BF6D87F00F0A227 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		17E962D12BF6D87F00F0A227 /* VRTX.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = VRTX.entitlements; sourceTree = "<group>"; };
@@ -63,6 +65,14 @@
 			path = GraphicsUtil;
 			sourceTree = "<group>";
 		};
+		179B2FAF2BFFC05300F02A3A /* MathViews */ = {
+			isa = PBXGroup;
+			children = (
+				179B2FB02BFFC06000F02A3A /* MatrixViews.swift */,
+			);
+			path = MathViews;
+			sourceTree = "<group>";
+		};
 		17E962BC2BF6D87E00F0A227 = {
 			isa = PBXGroup;
 			children = (
@@ -83,6 +93,7 @@
 		17E962C72BF6D87E00F0A227 /* VRTX */ = {
 			isa = PBXGroup;
 			children = (
+				179B2FAF2BFFC05300F02A3A /* MathViews */,
 				174AA7172BF99B7E002B03A4 /* VRTXApp.swift */,
 				17E962DE2BF7BF5800F0A227 /* Renderer.swift */,
 				17ED9E5C2BFA6CAC00268A2A /* Projection.swift */,
@@ -195,6 +206,7 @@
 				174AA7162BF8D421002B03A4 /* LinearAlgebra.swift in Sources */,
 				17ED9E672BFAAA5400268A2A /* LabeledSlider.swift in Sources */,
 				17E962E42BF7D0DD00F0A227 /* Float.swift in Sources */,
+				179B2FB12BFFC06000F02A3A /* MatrixViews.swift in Sources */,
 				17ED9E652BFAA52300268A2A /* SIMD.swift in Sources */,
 				17ED9E5F2BFA6CB900268A2A /* Geometry.swift in Sources */,
 				17ED9E612BFA6D2D00268A2A /* GeometryUIView.swift in Sources */,

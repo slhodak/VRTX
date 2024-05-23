@@ -22,29 +22,32 @@ struct Vertex {
 @Observable
 class Geometry {
     let logger = Logger(subsystem: "com.samhodak.VRTX", category: "Geometry")
-    var vertices: [Vertex] = [
-        Vertex(position: [0.0, -1.0, 0.5, 1.0], color: [1, 0, 0, 1]),
-        Vertex(position: [0.5, 0.0, 0.5, 1.0], color: [0, 1, 0, 1]),
-        Vertex(position: [1.0, -1.0, 0.5, 1.0], color: [0, 0, 1, 1]),
-    ]
+    var triangleVertexPositions: simd_float3x4 = simd_float3x4(
+        [0.0, 0.5, 0.5, 1.0],
+        [0.0, -0.5, 0.5, 1.0],
+        [-0.5, -0.5, 0.5, 1.0]
+    )
+    var triangleVertexColors: simd_float3x4 = simd_float3x4(
+        [1.0, 0.0, 0.0, 1.0],
+        [0.0, 1.0, 0.0, 1.0],
+        [0.0, 0.0, 1.0, 1.0]
+    )
+
+    var vertices = [Vertex]()
     var vertexBuffer: MTLBuffer!
     var scale: Float = 1.0
-    var translateX: Float = 0.0
-    var translateY: Float = 0.0
-    var translateZ: Float = 0.0
+    var translation: vector_float3 = [0, 0, 0]
     
-    func updateVertices(_ vertices: [[Float]]) {
-        for (i, vertex) in vertices.enumerated() {
-            guard vertex.count == 3 else { continue }
-            
-            let position = vector_float4(x: vertex[0],
-                                         y: vertex[1],
-                                         z: vertex[2],
-                                         w: 1)
-            let color = self.vertices[i].color
-            self.vertices[i] = Vertex(position: position, color: color)
+    func initVertices() {
+        for i in 0..<3 {
+            vertices.append(Vertex(position: triangleVertexPositions[i], color: triangleVertexColors[i]))
         }
-        logger.debug("Updated vertices: \(self.vertices)")
+    }
+    
+    func updateVertices() {
+        vertices = []
+        initVertices()
+        //logger.debug("Updated vertices: \(self.vertices)")
     }
     
     func setupVertexBuffer(for device: MTLDevice) {
@@ -55,6 +58,7 @@ class Geometry {
     }
     
     func updateVertexBuffer(for device: MTLDevice) {
+        updateVertices()
         let transformedVertices = transform(self.vertices)
         let newBufferSize = transformedVertices.count * MemoryLayout<Vertex>.stride
         
@@ -76,32 +80,17 @@ class Geometry {
     }
     
     func scale(_ vertices: [Vertex]) -> [Vertex] {
+        // TODO: Always scale from origin/center of triangle
         let scaledVertices = vertices.map { vertex in
             vertex.scale(by: scale)
         }
         return scaledVertices
     }
     
-    func translateX(_ vertices: [Vertex]) -> [Vertex] {
-        // move all vertices along the x axis
+    func translate(_ vertices: [Vertex]) -> [Vertex] {
         let translatedVertices = vertices.map { vertex in
-            Vertex(position: vertex.position + [translateX, 0, 0, 0], color: vertex.color)
-        }
-        return translatedVertices
-    }
-    
-    func translateY(_ vertices: [Vertex]) -> [Vertex] {
-        // move all vertices along the x axis
-        let translatedVertices = vertices.map { vertex in
-            Vertex(position: vertex.position + [0, translateY, 0, 0], color: vertex.color)
-        }
-        return translatedVertices
-    }
-    
-    func translateZ(_ vertices: [Vertex]) -> [Vertex] {
-        // move all vertices along the x axis
-        let translatedVertices = vertices.map { vertex in
-            Vertex(position: vertex.position + [0, 0, translateZ, 0], color: vertex.color)
+            let newPosition = vertex.position + [translation.x, translation.y, translation.z, 0]
+            return Vertex(position: newPosition, color: vertex.color)
         }
         return translatedVertices
     }
@@ -109,9 +98,7 @@ class Geometry {
     func transform(_ vertices: [Vertex]) -> [Vertex] {
         /// In the future, can apply other transformations here
         var transformedVertices = scale(vertices)
-        transformedVertices = translateX(transformedVertices)
-        transformedVertices = translateY(transformedVertices)
-        transformedVertices = translateZ(transformedVertices)
+        transformedVertices = translate(transformedVertices)
         return transformedVertices
     }
 }

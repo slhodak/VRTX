@@ -11,17 +11,13 @@ struct VertexOut {
     float4 color;
 };
 
-vertex VertexOut vertex_main(VertexIn vertex_in [[stage_in]], constant float4x4 &projectionMatrix [[buffer(1)]]) {
-    VertexOut vertex_out;
-    vertex_out.position = projectionMatrix * vertex_in.position;
-    vertex_out.color = vertex_in.color;
-    return vertex_out;
+vertex VertexOut vertex_main(VertexIn v_in [[stage_in]], constant float4x4& mvp_matrix [[buffer(1)]]) {
+    VertexOut v_out;
+    v_out.position = mvp_matrix * v_in.position;
+    v_out.color = v_in.color;
+    return v_out;
 }
 
 fragment float4 fragment_main(VertexOut frag_in [[stage_in]]) {
     return frag_in.color;
-//    float red = (frag_in.position.x + 1.0) / 2.0;
-//    float green = (frag_in.position.y + 1.0) / 2/0;
-//    float blue = (frag_in.position.z + 1.0) / 2.0;
-//    return float4(red, green, blue, 1.0);
 }

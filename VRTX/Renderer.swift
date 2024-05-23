@@ -53,6 +53,7 @@ class Renderer: NSObject, MTKViewDelegate {
     }
     
     func createGraphicsPipelineState() {
+        geometry.initVertices()
         geometry.setupVertexBuffer(for: device)
         
         let vertexDescriptor = MTLVertexDescriptor()
