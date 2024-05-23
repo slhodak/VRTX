@@ -8,23 +8,24 @@ struct ProjectionUIView: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            HStack {
-                Toggle(isOn: $projection.useProjection) {
-                    Text("Use Projection")
-                }
-                Spacer()
-            }
-            
-            Text("Current Projection Matrix").fontWeight(.bold)
-            Text(projection.projectionMatrix.toString())
+            Text("Projection Matrix")
             Matrix4x4View(mat: $projection.projectionMatrix)
                 .onChange(of: projection.projectionMatrix) {
                     NotificationCenter.default.post(name: .drawMessage, object: nil)
                 }
             
+            HStack {
+                Toggle(isOn: $projection.useProjection) {
+                    Text("Use Projection Algorithm")
+                }
+                Spacer()
+            }
+            
             if projection.useProjection {
-                Toggle(isOn: $projection.usePerspectiveProjection) {
-                    Text("Orthographic / Perspective")
+                HStack {
+                    Toggle("Orthographic", isOn: $projection.usePerspectiveProjection)
+                        .toggleStyle(.switch)
+                    Text("Perspective")
                 }
                 LabeledSlider(name: "FOV Y Radians Denominator (x in Float.pi / x)",
                               value: $projection.perspectiveFOVYDenominator,
@@ -40,5 +41,32 @@ struct ProjectionUIView: View {
             }
         }
         .padding()
+        .onChange(of: projection.useProjection) {
+            NotificationCenter.default.post(name: .drawMessage, object: nil)
+        }
+        .onChange(of: projection.usePerspectiveProjection) {
+            NotificationCenter.default.post(name: .drawMessage, object: nil)
+        }
+        .onChange(of: projection.perspectiveFOVYDenominator) {
+            NotificationCenter.default.post(name: .drawMessage, object: nil)
+        }
+        .onChange(of: projection.orthographicTop) {
+            NotificationCenter.default.post(name: .drawMessage, object: nil)
+        }
+        .onChange(of: projection.orthographicBottom) {
+            NotificationCenter.default.post(name: .drawMessage, object: nil)
+        }
+        .onChange(of: projection.orthographicLeft) {
+            NotificationCenter.default.post(name: .drawMessage, object: nil)
+        }
+        .onChange(of: projection.orthographicRight) {
+            NotificationCenter.default.post(name: .drawMessage, object: nil)
+        }
+        .onChange(of: projection.projectionNear) {
+            NotificationCenter.default.post(name: .drawMessage, object: nil)
+        }
+        .onChange(of: projection.projectionFar) {
+            NotificationCenter.default.post(name: .drawMessage, object: nil)
+        }
     }
 }
