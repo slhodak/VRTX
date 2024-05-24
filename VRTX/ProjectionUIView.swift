@@ -29,7 +29,7 @@ struct ProjectionUIView: View {
                 }
                 LabeledSlider(name: "FOV Y Radians Denominator (x in Float.pi / x)",
                               value: $projection.perspectiveFOVYDenominator,
-                              max: 4.0)
+                              min: 3, max: 16.0, step: 0.5)
                 Text("FOV Y Radians: \(projection.perspectiveFOVYRadians())")
                 Text("Aspect Ratio: \(projection.projectionPerspectiveAspect)")
                 LabeledSlider(name: "Orthographic Top", value: $projection.orthographicTop)
