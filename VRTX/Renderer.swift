@@ -67,7 +67,6 @@ class Renderer: NSObject, MTKViewDelegate {
         vertexDescriptor.attributes[1] = MDLVertexAttribute(name: MDLVertexAttributeNormal, format: .float3, offset: MemoryLayout<Float>.size * 3, bufferIndex: 0)
         // Green Color
         //vertexDescriptor.attributes[2] = simd_float4(0, 1, 0, 1)
-        /// Maybe we won't have texture coords
         vertexDescriptor.attributes[2] = MDLVertexAttribute(name: MDLVertexAttributeTextureCoordinate, format: .float3, offset: MemoryLayout<Float>.size * 6, bufferIndex: 0)
         vertexDescriptor.layouts[0] = MDLVertexBufferLayout(stride: MemoryLayout<Float>.size * 8)
         

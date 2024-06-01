@@ -39,14 +39,23 @@ struct OBJVertexIn {
     float4 color    [[attribute(2)]];
 };
 
-vertex VertexOut vertex_obj(OBJVertexIn v_in [[stage_in]],
+struct OBJVertexOut {
+    float4 position [[position]];
+    float4 eyeNormal;
+    float4 eyePosition;
+    float4 color;
+};
+
+vertex OBJVertexOut vertex_obj(OBJVertexIn v_in [[stage_in]],
                              constant Uniforms &uniforms [[buffer(1)]]) {
-    VertexOut v_out;
+    OBJVertexOut v_out;
     v_out.position = uniforms.projectionMatrix * uniforms.modelViewMatrix * float4(v_in.position, 1);
+    v_out.eyeNormal = uniforms.modelViewMatrix * float4(v_in.normal, 0);
     v_out.color = v_in.color;
     return v_out;
 }
 
-fragment float4 fragment_obj(VertexOut frag_in [[stage_in]]) {
-    return frag_in.color;
+fragment float4 fragment_obj(OBJVertexOut frag_in [[stage_in]]) {
+    float3 normal = normalize(frag_in.eyeNormal.xyz);
+    return float4(abs(normal), 1);
 }
