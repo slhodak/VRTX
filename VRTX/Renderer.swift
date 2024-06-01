@@ -18,7 +18,6 @@ class Renderer: NSObject, MTKViewDelegate {
     var commandQueue: MTLCommandQueue
     var pipelineState: MTLRenderPipelineState!
     var geometry: Geometry
-    var useModel = true
     var modelVertexDescriptor: MTLVertexDescriptor?
     var customGeometryVertexDescriptor: MTLVertexDescriptor?
     var meshes: [MTKMesh] = []
@@ -41,14 +40,6 @@ class Renderer: NSObject, MTKViewDelegate {
         metalView.delegate = self
         metalView.isPaused = true
         metalView.enableSetNeedsDisplay = true
-        
-        // TODO: Move this to where it can be toggled
-        if useModel {
-            loadModel()
-        } else {
-            loadCustomGeometry()
-        }
-        createGraphicsPipelineState()
         
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(handleDrawMessage(_:)),
@@ -117,7 +108,7 @@ class Renderer: NSObject, MTKViewDelegate {
         var vertexFunction: MTLFunction!
         var fragmentFunction: MTLFunction!
         
-        if useModel {
+        if geometry.useModel {
             guard let vertexDescriptor = modelVertexDescriptor else {
                 fatalError("No vertex descriptor found")
             }
@@ -156,8 +147,16 @@ class Renderer: NSObject, MTKViewDelegate {
             return
         }
         
+        if geometry.useModel {
+            loadModel()
+        } else {
+            loadCustomGeometry()
+        }
+        
+        createGraphicsPipelineState()
+        
         var modelMatrix: simd_float4x4!
-        if useModel {
+        if geometry.useModel {
             modelMatrix = simd_float4x4(rotationAbout: simd_float3(0, 1, 0),
                                         by: -Float.pi / 6) *  simd_float4x4(scaleBy: 0.25)
         } else {
@@ -173,7 +172,7 @@ class Renderer: NSObject, MTKViewDelegate {
         renderEncoder.setVertexBytes(&uniforms, length: MemoryLayout<Uniforms>.size, index: 1)
         renderEncoder.setRenderPipelineState(pipelineState)
         
-        if useModel {
+        if geometry.useModel {
             for mesh in meshes {
                 let vertexBuffer = mesh.vertexBuffers.first!
                 renderEncoder.setVertexBuffer(vertexBuffer.buffer, offset: vertexBuffer.offset, index: 0)

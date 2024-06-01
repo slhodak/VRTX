@@ -22,6 +22,7 @@ struct Vertex {
 @Observable
 class Geometry {
     let logger = Logger(subsystem: "com.samhodak.VRTX", category: "Geometry")
+    var useModel = false
     var triangleVertexPositions: simd_float3x4 = simd_float3x4(
         [0.0, 2, -5, 1.0],
         [2, -2, -5, 1.0],
