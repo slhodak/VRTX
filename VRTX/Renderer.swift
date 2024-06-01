@@ -159,7 +159,7 @@ class Renderer: NSObject, MTKViewDelegate {
         var modelMatrix: simd_float4x4!
         if useModel {
             modelMatrix = simd_float4x4(rotationAbout: simd_float3(0, 1, 0),
-                                        by: -Float.pi / 5) *  simd_float4x4(scaleBy: 0.25)
+                                        by: -Float.pi / 6) *  simd_float4x4(scaleBy: 0.25)
         } else {
             modelMatrix = simd_float4x4(1)
         }

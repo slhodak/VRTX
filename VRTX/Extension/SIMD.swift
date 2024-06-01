@@ -20,7 +20,7 @@ extension simd_float4x4 {
     init(rotationAbout axis: SIMD3<Float>, by angleRadians: Float) {
         let x = axis.x, y = axis.y, z = axis.z
         let c = cos(angleRadians)
-        let s = sin(angleRadians)
+        let s = sinf(angleRadians)
         let t = 1 - c
         self.init(simd_float4( t * x * x + c,     t * x * y + z * s, t * x * z - y * s, 0),
                   simd_float4( t * x * y - z * s, t * y * y + c,     t * y * z + x * s, 0),
