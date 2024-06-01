@@ -1,10 +1,6 @@
 #include <metal_stdlib>
 using namespace metal;
 
-struct VertexIn {
-    float4 position [[attribute(0)]];
-    float4 color    [[attribute(1)]];
-};
 
 struct VertexOut {
     float4 position [[position]];
@@ -16,7 +12,14 @@ struct Uniforms {
     float4x4 projectionMatrix;
 };
 
-vertex VertexOut vertex_main(VertexIn v_in [[stage_in]],
+// MARK: Custom Geometry
+
+struct CustomVertexIn {
+    float4 position [[attribute(0)]];
+    float4 color    [[attribute(1)]];
+};
+
+vertex VertexOut vertex_custom(CustomVertexIn v_in [[stage_in]],
                              constant Uniforms &uniforms [[buffer(1)]]) {
     VertexOut v_out;
     v_out.position = uniforms.projectionMatrix * uniforms.modelViewMatrix * v_in.position;
@@ -24,6 +27,26 @@ vertex VertexOut vertex_main(VertexIn v_in [[stage_in]],
     return v_out;
 }
 
-fragment float4 fragment_main(VertexOut frag_in [[stage_in]]) {
+fragment float4 fragment_custom(VertexOut frag_in [[stage_in]]) {
+    return frag_in.color;
+}
+
+// MARK: OBJ Geometry
+
+struct OBJVertexIn {
+    float3 position [[attribute(0)]];
+    float3 normal   [[attribute(1)]];
+    float4 color    [[attribute(2)]];
+};
+
+vertex VertexOut vertex_obj(OBJVertexIn v_in [[stage_in]],
+                             constant Uniforms &uniforms [[buffer(1)]]) {
+    VertexOut v_out;
+    v_out.position = uniforms.projectionMatrix * uniforms.modelViewMatrix * float4(v_in.position, 1);
+    v_out.color = v_in.color;
+    return v_out;
+}
+
+fragment float4 fragment_obj(VertexOut frag_in [[stage_in]]) {
     return frag_in.color;
 }

@@ -10,6 +10,7 @@
 		174AA7182BF99B7E002B03A4 /* VRTXApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 174AA7172BF99B7E002B03A4 /* VRTXApp.swift */; };
 		174AA71A2BF9A384002B03A4 /* MetalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 174AA7192BF9A384002B03A4 /* MetalView.swift */; };
 		179B2FB12BFFC06000F02A3A /* MatrixViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 179B2FB02BFFC06000F02A3A /* MatrixViews.swift */; };
+		17D46BA32C0B8D6800B14973 /* suzanne.obj in Resources */ = {isa = PBXBuildFile; fileRef = 17D46BA22C0B8D6800B14973 /* suzanne.obj */; };
 		17E962CD2BF6D87F00F0A227 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 17E962CC2BF6D87F00F0A227 /* Assets.xcassets */; };
 		17E962DD2BF6E43300F0A227 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 17E962DC2BF6E43300F0A227 /* Shaders.metal */; };
 		17E962DF2BF7BF5800F0A227 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17E962DE2BF7BF5800F0A227 /* Renderer.swift */; };
@@ -27,6 +28,7 @@
 		174AA7172BF99B7E002B03A4 /* VRTXApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VRTXApp.swift; sourceTree = "<group>"; };
 		174AA7192BF9A384002B03A4 /* MetalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalView.swift; sourceTree = "<group>"; };
 		179B2FB02BFFC06000F02A3A /* MatrixViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatrixViews.swift; sourceTree = "<group>"; };
+		17D46BA22C0B8D6800B14973 /* suzanne.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = suzanne.obj; sourceTree = "<group>"; };
 		17E962C52BF6D87E00F0A227 /* VRTX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VRTX.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		17E962CC2BF6D87F00F0A227 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		17E962D12BF6D87F00F0A227 /* VRTX.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = VRTX.entitlements; sourceTree = "<group>"; };
@@ -63,9 +65,18 @@
 			path = MathViews;
 			sourceTree = "<group>";
 		};
+		17D46BA42C0B8D6B00B14973 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				17D46BA22C0B8D6800B14973 /* suzanne.obj */,
+			);
+			name = Models;
+			sourceTree = "<group>";
+		};
 		17E962BC2BF6D87E00F0A227 = {
 			isa = PBXGroup;
 			children = (
+				17D46BA42C0B8D6B00B14973 /* Models */,
 				17E962C72BF6D87E00F0A227 /* VRTX */,
 				17E962C62BF6D87E00F0A227 /* Products */,
 				17E962D72BF6E22700F0A227 /* Frameworks */,
@@ -177,6 +188,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				17D46BA32C0B8D6800B14973 /* suzanne.obj in Resources */,
 				17E962CD2BF6D87F00F0A227 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
