@@ -1,8 +1,14 @@
 import MetalKit
+import simd
 import os
 
 extension Notification.Name {
     static let drawMessage = Notification.Name("drawMessage")
+}
+
+struct Uniforms {
+    var modelViewMatrix: simd_float4x4
+    var projectionMatrix: simd_float4x4
 }
 
 class Renderer: NSObject, MTKViewDelegate {
@@ -101,8 +107,15 @@ class Renderer: NSObject, MTKViewDelegate {
         geometry.updateVertexBuffer(for: device)
         renderEncoder.setVertexBuffer(geometry.vertexBuffer, offset: 0, index: 0)
         
+        let modelMatrix = simd_float4x4(1)
+        let viewMatrix = simd_float4x4(translationBy: SIMD3<Float>(0, 0, -2))
+        let modelViewMatrix = viewMatrix * modelMatrix
+        var uniforms = Uniforms(modelViewMatrix: modelViewMatrix,
+                                projectionMatrix: projection.projectionMatrix)
+        
         projection.setupProjectionMatrixBuffer(for: device)
-        renderEncoder.setVertexBuffer(projection.projectionMatrixBuffer, offset: 0, index: 1)
+        renderEncoder.setVertexBytes(&uniforms, length: MemoryLayout<Uniforms>.size, index: 1)
+        //renderEncoder.setVertexBuffer(projection.projectionMatrixBuffer, offset: 0, index: 1)
         renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 3)
         renderEncoder.endEncoding()
         

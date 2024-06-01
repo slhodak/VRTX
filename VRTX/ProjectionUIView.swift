@@ -29,15 +29,16 @@ struct ProjectionUIView: View {
                 }
                 LabeledSlider(name: "FOV Y Radians Denominator (x in Float.pi / x)",
                               value: $projection.perspectiveFOVYDenominator,
-                              min: 3, max: 16.0, step: 0.5)
+                              min: 3,
+                              max: 16.0)
                 Text("FOV Y Radians: \(projection.perspectiveFOVYRadians())")
                 Text("Aspect Ratio: \(projection.projectionPerspectiveAspect)")
                 LabeledSlider(name: "Orthographic Top", value: $projection.orthographicTop)
                 LabeledSlider(name: "Orthographic Bottom", value: $projection.orthographicBottom)
                 LabeledSlider(name: "Orthographic Left", value: $projection.orthographicLeft)
                 LabeledSlider(name: "Orthographic Right", value: $projection.orthographicRight)
-                LabeledSlider(name: "Near Z", value: $projection.projectionNear)
-                LabeledSlider(name: "Far Z", value: $projection.projectionFar, max: 100.0, step: 5)
+                LabeledSlider(name: "Near Z", value: $projection.projectionNear, min: 0, max: 4.5, step: 0.5)
+                LabeledSlider(name: "Far Z", value: $projection.projectionFar, min: 5, max: 100, step: 5)
             }
         }
         .padding()
