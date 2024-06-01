@@ -62,7 +62,7 @@ class Renderer: NSObject, MTKViewDelegate {
     func loadModel() {
         let modelURL = Bundle.main.url(forResource: "suzanne", withExtension: "obj")!
         let vertexDescriptor = MDLVertexDescriptor()
-        // but maybe .obj does not have vertices and normals as float4, but as float3 as in the example
+        
         vertexDescriptor.attributes[0] = MDLVertexAttribute(name: MDLVertexAttributePosition,
                                                             format: .float3,
                                                             offset: 0,

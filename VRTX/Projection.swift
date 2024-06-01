@@ -8,7 +8,7 @@ class Projection {
     var projectionMatrixBuffer: MTLBuffer?
     var projectionPerspectiveAspect: Float!
     var usePerspectiveProjection: Bool = true
-    var useProjection: Bool = false
+    var useProjection: Bool = true
     var perspectiveFOVYDenominator: Float = 3.0
     var orthographicLeft: Float = 0
     var orthographicRight: Float = 0
