@@ -63,11 +63,20 @@ class Renderer: NSObject, MTKViewDelegate {
         let modelURL = Bundle.main.url(forResource: "suzanne", withExtension: "obj")!
         let vertexDescriptor = MDLVertexDescriptor()
         // but maybe .obj does not have vertices and normals as float4, but as float3 as in the example
-        vertexDescriptor.attributes[0] = MDLVertexAttribute(name: MDLVertexAttributePosition, format: .float3, offset: 0, bufferIndex: 0)
-        vertexDescriptor.attributes[1] = MDLVertexAttribute(name: MDLVertexAttributeNormal, format: .float3, offset: MemoryLayout<Float>.size * 3, bufferIndex: 0)
+        vertexDescriptor.attributes[0] = MDLVertexAttribute(name: MDLVertexAttributePosition,
+                                                            format: .float3,
+                                                            offset: 0,
+                                                            bufferIndex: 0)
+        vertexDescriptor.attributes[1] = MDLVertexAttribute(name: MDLVertexAttributeNormal,
+                                                            format: .float3,
+                                                            offset: MemoryLayout<Float>.size * 3,
+                                                            bufferIndex: 0)
         // Green Color
         //vertexDescriptor.attributes[2] = simd_float4(0, 1, 0, 1)
-        vertexDescriptor.attributes[2] = MDLVertexAttribute(name: MDLVertexAttributeTextureCoordinate, format: .float3, offset: MemoryLayout<Float>.size * 6, bufferIndex: 0)
+        vertexDescriptor.attributes[2] = MDLVertexAttribute(name: MDLVertexAttributeTextureCoordinate,
+                                                            format: .float3,
+                                                            offset: MemoryLayout<Float>.size * 6,
+                                                            bufferIndex: 0)
         vertexDescriptor.layouts[0] = MDLVertexBufferLayout(stride: MemoryLayout<Float>.size * 8)
         
         self.modelVertexDescriptor = MTKMetalVertexDescriptorFromModelIO(vertexDescriptor)
@@ -87,12 +96,15 @@ class Renderer: NSObject, MTKViewDelegate {
         geometry.setupVertexBuffer(for: device)
         
         let vertexDescriptor = MTLVertexDescriptor()
-        vertexDescriptor.attributes[0].format = .float4
+        vertexDescriptor.attributes[0].format = .float3
         vertexDescriptor.attributes[0].offset = 0
         vertexDescriptor.attributes[0].bufferIndex = 0
-        vertexDescriptor.attributes[1].format = .float4
-        vertexDescriptor.attributes[1].offset = MemoryLayout<vector_float4>.stride
+        vertexDescriptor.attributes[1].format = .float3
+        vertexDescriptor.attributes[1].offset = MemoryLayout<simd_float3>.stride
         vertexDescriptor.attributes[1].bufferIndex = 0
+        vertexDescriptor.attributes[2].format = .float3
+        vertexDescriptor.attributes[2].offset = MemoryLayout<simd_float3>.stride * 2
+        vertexDescriptor.attributes[2].bufferIndex = 0
 
         vertexDescriptor.layouts[0].stride = MemoryLayout<Vertex>.stride
         self.customGeometryVertexDescriptor = vertexDescriptor
@@ -112,17 +124,15 @@ class Renderer: NSObject, MTKViewDelegate {
                 fatalError("No vertex descriptor found")
             }
             pipelineDescriptor.vertexDescriptor = vertexDescriptor
-            vertexFunction = defaultLibrary.makeFunction(name: "vertex_obj")
-            fragmentFunction = defaultLibrary.makeFunction(name: "fragment_obj")
         } else {
             guard let vertexDescriptor = customGeometryVertexDescriptor else {
                 fatalError("No vertex descriptor found")
             }
             pipelineDescriptor.vertexDescriptor = vertexDescriptor
-            vertexFunction = defaultLibrary.makeFunction(name: "vertex_custom")
-            fragmentFunction = defaultLibrary.makeFunction(name: "fragment_custom")
         }
         
+        vertexFunction = defaultLibrary.makeFunction(name: "vertex_main")
+        fragmentFunction = defaultLibrary.makeFunction(name: "fragment_main")
         pipelineDescriptor.vertexFunction = vertexFunction
         pipelineDescriptor.fragmentFunction = fragmentFunction
         pipelineDescriptor.colorAttachments[0].pixelFormat = .bgra8Unorm

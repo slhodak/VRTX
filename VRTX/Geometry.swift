@@ -4,16 +4,17 @@ import simd
 import os
 
 struct Vertex {
-    var position: vector_float4
-    var color: vector_float4
+    var position: simd_float3
+    var normal: simd_float3
+    var color: simd_float3
     
     func scale(by scalar: Float) -> Vertex {
         return Vertex(position: [
             position.x * scalar,
             position.y * scalar,
-            position.z * scalar,
-            position.w
+            position.z * scalar
         ],
+                      normal: self.normal,
                       color: self.color
         )
     }
@@ -23,15 +24,15 @@ struct Vertex {
 class Geometry {
     let logger = Logger(subsystem: "com.samhodak.VRTX", category: "Geometry")
     var useModel = false
-    var triangleVertexPositions: simd_float3x4 = simd_float3x4(
-        [0.0, 2, -5, 1.0],
-        [2, -2, -5, 1.0],
-        [-2, -2, -5, 1.0]
+    var triangleVertexPositions: simd_float3x3 = simd_float3x3(
+        [0.0, 2, -5],
+        [2, -2, -5],
+        [-2, -2, -5]
     )
-    var triangleVertexColors: simd_float3x4 = simd_float3x4(
-        [1.0, 0.0, 0.0, 1.0],
-        [0.0, 1.0, 0.0, 1.0],
-        [0.0, 0.0, 1.0, 1.0]
+    var triangleVertexColors: simd_float3x3 = simd_float3x3(
+        [1.0, 0.0, 0.0],
+        [0.0, 1.0, 0.0],
+        [0.0, 0.0, 1.0]
     )
 
     var vertices = [Vertex]()
@@ -41,7 +42,7 @@ class Geometry {
     
     func initVertices() {
         for i in 0..<3 {
-            vertices.append(Vertex(position: triangleVertexPositions[i], color: triangleVertexColors[i]))
+            vertices.append(Vertex(position: triangleVertexPositions[i], normal: getNormals(), color: triangleVertexColors[i]))
         }
     }
     
@@ -80,6 +81,18 @@ class Geometry {
         }
     }
     
+    func getNormals() -> simd_float3 {
+        // Calculate vectors for two edges of the triangle
+        let edge1 = triangleVertexPositions[1] - triangleVertexPositions[0]
+        let edge2 = triangleVertexPositions[2] - triangleVertexPositions[0]
+
+        // Compute the cross product of the two edge vectors
+        let normal = simd_cross(edge1, edge2)
+
+        // Normalize the resulting vector to get the unit normal
+        return simd_normalize(normal)
+    }
+    
     func scale(_ vertices: [Vertex]) -> [Vertex] {
         // TODO: Always scale from origin/center of triangle
         let scaledVertices = vertices.map { vertex in
@@ -90,8 +103,8 @@ class Geometry {
     
     func translate(_ vertices: [Vertex]) -> [Vertex] {
         let translatedVertices = vertices.map { vertex in
-            let newPosition = vertex.position + [translation.x, translation.y, translation.z, 0]
-            return Vertex(position: newPosition, color: vertex.color)
+            let newPosition = vertex.position + [translation.x, translation.y, translation.z]
+            return Vertex(position: newPosition, normal: vertex.normal, color: vertex.color)
         }
         return translatedVertices
     }

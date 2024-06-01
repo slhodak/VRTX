@@ -13,7 +13,7 @@ struct GeometryUIView: View {
                 Text("Use Model")
             }
             Text("Triangle Vertices")
-            Matrix3x4View(mat: $geometry.triangleVertexPositions)
+            Matrix3x3View(mat: $geometry.triangleVertexPositions)
             
             LabeledSlider(name: "Scale", value: $geometry.scale, min: 0.1, max: 10.0)
             LabeledSlider(name: "Translate X", value: $geometry.translation.x, min: -2.0, max: 2.0)
