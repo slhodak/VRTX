@@ -6,7 +6,7 @@ import os
 struct Vertex {
     var position: simd_float3
     var normal: simd_float3
-    var color: simd_float3
+    var texCoords: simd_float2
     
     func scale(by scalar: Float) -> Vertex {
         return Vertex(position: [
@@ -15,7 +15,7 @@ struct Vertex {
             position.z * scalar
         ],
                       normal: self.normal,
-                      color: self.color
+                      texCoords: self.texCoords
         )
     }
 }
@@ -23,7 +23,7 @@ struct Vertex {
 @Observable
 class Geometry {
     let logger = Logger(subsystem: "com.samhodak.VRTX", category: "Geometry")
-    var useModel = true
+    var useModel = false
     var triangleVertexPositions: simd_float3x3 = simd_float3x3(
         [0.0, 2, -5],
         [2, -2, -5],
@@ -34,15 +34,16 @@ class Geometry {
         [0.0, 1.0, 0.0],
         [0.0, 0.0, 1.0]
     )
-
+    var modelMatrix = simd_float4x4(1)
+    
     var vertices = [Vertex]()
     var vertexBuffer: MTLBuffer!
-    var scale: Float = 1.0
+    var scaleValue: Float = 1.0
     var translation: vector_float3 = [0, 0, 0]
     
     func initVertices() {
         for i in 0..<3 {
-            vertices.append(Vertex(position: triangleVertexPositions[i], normal: getNormals(), color: triangleVertexColors[i]))
+            vertices.append(Vertex(position: triangleVertexPositions[i], normal: getNormals(), texCoords: simd_float2(0, 0)))
         }
     }
     
@@ -53,21 +54,19 @@ class Geometry {
     }
     
     func setupVertexBuffer(for device: MTLDevice) {
-        let transformedVertices = transform(self.vertices)
-        vertexBuffer = device.makeBuffer(bytes: transformedVertices,
-                                         length: transformedVertices.count * MemoryLayout<Vertex>.stride,
+        vertexBuffer = device.makeBuffer(bytes: vertices,
+                                         length: vertices.count * MemoryLayout<Vertex>.stride,
                                          options: .storageModeShared)
     }
     
     func updateVertexBuffer(for device: MTLDevice) {
         updateVertices()
-        let transformedVertices = transform(self.vertices)
-        let newBufferSize = transformedVertices.count * MemoryLayout<Vertex>.stride
+        let newBufferSize = vertices.count * MemoryLayout<Vertex>.stride
         
         // Check if the existing buffer can accommodate the new data
         if newBufferSize > vertexBuffer.length {
             // Reallocate the buffer if new data size exceeds the current buffer size
-            vertexBuffer = device.makeBuffer(bytes: transformedVertices,
+            vertexBuffer = device.makeBuffer(bytes: vertices,
                                              length: newBufferSize,
                                              options: .storageModeShared)
             if vertexBuffer == nil {
@@ -77,7 +76,7 @@ class Geometry {
         } else {
             // Update the buffer contents directly if it fits
             let bufferPointer = vertexBuffer.contents()
-            bufferPointer.copyMemory(from: transformedVertices, byteCount: newBufferSize)
+            bufferPointer.copyMemory(from: vertices, byteCount: newBufferSize)
         }
     }
     
@@ -93,26 +92,32 @@ class Geometry {
         return simd_normalize(normal)
     }
     
-    func scale(_ vertices: [Vertex]) -> [Vertex] {
-        // TODO: Always scale from origin/center of triangle
-        let scaledVertices = vertices.map { vertex in
-            vertex.scale(by: scale)
-        }
-        return scaledVertices
+    func scale() {
+        self.modelMatrix *= simd_float4x4(scaleBy: scaleValue)
     }
     
-    func translate(_ vertices: [Vertex]) -> [Vertex] {
-        let translatedVertices = vertices.map { vertex in
-            let newPosition = vertex.position + [translation.x, translation.y, translation.z]
-            return Vertex(position: newPosition, normal: vertex.normal, color: vertex.color)
-        }
-        return translatedVertices
+    func translate() {
+        self.modelMatrix *= simd_float4x4(translationBy: translation)
     }
     
-    func transform(_ vertices: [Vertex]) -> [Vertex] {
-        /// In the future, can apply other transformations here
-        var transformedVertices = scale(vertices)
-        transformedVertices = translate(transformedVertices)
-        return transformedVertices
+//    func transform(_ vertices: [Vertex]) -> [Vertex] {
+//        /// In the future, can apply other transformations here
+//        var transformedVertices = scale(vertices)
+//        transformedVertices = translate(transformedVertices)
+//        return transformedVertices
+//    }
+}
+
+class Node {
+    var name: String
+    weak var parent: Node?
+    var children = [Node]()
+    var modelMatrix = matrix_identity_float4x4
+    var mesh: MTKMesh?
+    
+    var geometry: Geometry?
+    
+    init(name: String) {
+        self.name = name
     }
 }

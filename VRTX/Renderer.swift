@@ -17,9 +17,9 @@ class Renderer: NSObject, MTKViewDelegate {
     var device: MTLDevice
     var commandQueue: MTLCommandQueue
     var pipelineState: MTLRenderPipelineState!
+    var modelVertexDescriptor: MDLVertexDescriptor?
+    var vertexDescriptor: MTLVertexDescriptor!
     var geometry: Geometry
-    var modelVertexDescriptor: MTLVertexDescriptor?
-    var customGeometryVertexDescriptor: MTLVertexDescriptor?
     var meshes: [MTKMesh] = []
     var projection: Projection
     
@@ -34,6 +34,11 @@ class Renderer: NSObject, MTKViewDelegate {
         self.commandQueue = queue
         self.geometry = Geometry()
         self.projection = Projection(size: view.bounds.size)
+        self.modelVertexDescriptor = Renderer.getModelVertexDescriptor()
+        let vertexDescriptor = Renderer.makeVertexDescriptor()
+        self.vertexDescriptor = vertexDescriptor
+        self.pipelineState = Renderer.makePipelineState(device: device, vertexDescriptor: vertexDescriptor)
+        
         super.init()
         
         metalView.device = device
@@ -59,27 +64,8 @@ class Renderer: NSObject, MTKViewDelegate {
         projection.setupProjectionMatrixBuffer(for: device)
     }
     
-    func loadModel() {
+    func loadModel(vertexDescriptor: MDLVertexDescriptor) {
         let modelURL = Bundle.main.url(forResource: "suzanne", withExtension: "obj")!
-        let vertexDescriptor = MDLVertexDescriptor()
-        
-        vertexDescriptor.attributes[0] = MDLVertexAttribute(name: MDLVertexAttributePosition,
-                                                            format: .float3,
-                                                            offset: 0,
-                                                            bufferIndex: 0)
-        vertexDescriptor.attributes[1] = MDLVertexAttribute(name: MDLVertexAttributeNormal,
-                                                            format: .float3,
-                                                            offset: MemoryLayout<Float>.size * 3,
-                                                            bufferIndex: 0)
-        // Green Color
-        //vertexDescriptor.attributes[2] = simd_float4(0, 1, 0, 1)
-        vertexDescriptor.attributes[2] = MDLVertexAttribute(name: MDLVertexAttributeTextureCoordinate,
-                                                            format: .float3,
-                                                            offset: MemoryLayout<Float>.size * 6,
-                                                            bufferIndex: 0)
-        vertexDescriptor.layouts[0] = MDLVertexBufferLayout(stride: MemoryLayout<Float>.size * 8)
-        
-        self.modelVertexDescriptor = MTKMetalVertexDescriptorFromModelIO(vertexDescriptor)
         let bufferAllocator = MTKMeshBufferAllocator(device: device)
         let asset = MDLAsset(url: modelURL, vertexDescriptor: vertexDescriptor, bufferAllocator: bufferAllocator)
         var meshes: [MTKMesh] = []
@@ -94,51 +80,58 @@ class Renderer: NSObject, MTKViewDelegate {
     func loadCustomGeometry() {
         geometry.initVertices()
         geometry.setupVertexBuffer(for: device)
+    }
+    
+    static func getModelVertexDescriptor() -> MDLVertexDescriptor {
+        let vertexDescriptor = MDLVertexDescriptor()
+        vertexDescriptor.attributes[0] = MDLVertexAttribute(name: MDLVertexAttributePosition,
+                                                            format: .float3,
+                                                            offset: 0,
+                                                            bufferIndex: 0)
+        vertexDescriptor.attributes[1] = MDLVertexAttribute(name: MDLVertexAttributeNormal,
+                                                            format: .float3,
+                                                            offset: MemoryLayout<Float>.size * 3,
+                                                            bufferIndex: 0)
+        vertexDescriptor.attributes[2] = MDLVertexAttribute(name: MDLVertexAttributeTextureCoordinate,
+                                                            format: .float2,
+                                                            offset: MemoryLayout<Float>.size * 6,
+                                                            bufferIndex: 0)
+        vertexDescriptor.layouts[0] = MDLVertexBufferLayout(stride: MemoryLayout<Float>.size * 8)
         
+        return vertexDescriptor
+    }
+    
+    static func makeVertexDescriptor() -> MTLVertexDescriptor {
         let vertexDescriptor = MTLVertexDescriptor()
         vertexDescriptor.attributes[0].format = .float3
         vertexDescriptor.attributes[0].offset = 0
         vertexDescriptor.attributes[0].bufferIndex = 0
         vertexDescriptor.attributes[1].format = .float3
-        vertexDescriptor.attributes[1].offset = MemoryLayout<simd_float3>.stride
+        vertexDescriptor.attributes[1].offset = MemoryLayout<Float>.size * 3
         vertexDescriptor.attributes[1].bufferIndex = 0
-        vertexDescriptor.attributes[2].format = .float3
-        vertexDescriptor.attributes[2].offset = MemoryLayout<simd_float3>.stride * 2
+        vertexDescriptor.attributes[2].format = .float2
+        vertexDescriptor.attributes[2].offset = MemoryLayout<Float>.size * 6
         vertexDescriptor.attributes[2].bufferIndex = 0
-
-        vertexDescriptor.layouts[0].stride = MemoryLayout<Vertex>.stride
-        self.customGeometryVertexDescriptor = vertexDescriptor
+        vertexDescriptor.layouts[0].stride = MemoryLayout<Float>.size * 8
+        
+        return vertexDescriptor
     }
     
-    func createGraphicsPipelineState() {
-        /// Load shaders
+    static func makePipelineState(device: MTLDevice, vertexDescriptor: MTLVertexDescriptor) -> MTLRenderPipelineState {
         let defaultLibrary = device.makeDefaultLibrary()!
         
-        /// Create render pipeline
         let pipelineDescriptor = MTLRenderPipelineDescriptor()
-        var vertexFunction: MTLFunction!
-        var fragmentFunction: MTLFunction!
         
-        if geometry.useModel {
-            guard let vertexDescriptor = modelVertexDescriptor else {
-                fatalError("No vertex descriptor found")
-            }
-            pipelineDescriptor.vertexDescriptor = vertexDescriptor
-        } else {
-            guard let vertexDescriptor = customGeometryVertexDescriptor else {
-                fatalError("No vertex descriptor found")
-            }
-            pipelineDescriptor.vertexDescriptor = vertexDescriptor
-        }
+        pipelineDescriptor.vertexDescriptor = vertexDescriptor
         
-        vertexFunction = defaultLibrary.makeFunction(name: "vertex_main")
-        fragmentFunction = defaultLibrary.makeFunction(name: "fragment_main")
+        let vertexFunction = defaultLibrary.makeFunction(name: "vertex_main")
+        let fragmentFunction = defaultLibrary.makeFunction(name: "fragment_main")
         pipelineDescriptor.vertexFunction = vertexFunction
         pipelineDescriptor.fragmentFunction = fragmentFunction
         pipelineDescriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
         
         do {
-            pipelineState = try device.makeRenderPipelineState(descriptor: pipelineDescriptor)
+            return try device.makeRenderPipelineState(descriptor: pipelineDescriptor)
         } catch let error {
             fatalError("Failed to create pipeline state: \(error)")
         }
@@ -156,20 +149,19 @@ class Renderer: NSObject, MTKViewDelegate {
             return
         }
         
-        if geometry.useModel {
-            loadModel()
+        if geometry.useModel,
+           let vertexDescriptor = self.modelVertexDescriptor {
+            loadModel(vertexDescriptor: vertexDescriptor)
         } else {
             loadCustomGeometry()
         }
         
-        createGraphicsPipelineState()
-        
         var modelMatrix: simd_float4x4!
         if geometry.useModel {
             modelMatrix = simd_float4x4(rotationAbout: simd_float3(0, 1, 0),
-                                        by: -Float.pi / 6) *  simd_float4x4(scaleBy: 0.25)
+                                        by: -Float.pi / 7) *  simd_float4x4(scaleBy: 0.25)
         } else {
-            modelMatrix = simd_float4x4(1)
+            modelMatrix = geometry.modelMatrix * simd_float4x4(rotationAbout: simd_float3(0, 1, 0), by: Float.pi/2)
         }
         
         let viewMatrix = simd_float4x4(translationBy: SIMD3<Float>(0, 0, -2))

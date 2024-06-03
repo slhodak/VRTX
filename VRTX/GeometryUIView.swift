@@ -15,7 +15,7 @@ struct GeometryUIView: View {
             Text("Triangle Vertices")
             Matrix3x3View(mat: $geometry.triangleVertexPositions)
             
-            LabeledSlider(name: "Scale", value: $geometry.scale, min: 0.1, max: 10.0)
+            LabeledSlider(name: "Scale", value: $geometry.scaleValue, min: 0.1, max: 10.0)
             LabeledSlider(name: "Translate X", value: $geometry.translation.x, min: -2.0, max: 2.0)
             LabeledSlider(name: "Translate Y", value: $geometry.translation.y, min: -2.0, max: 2.0)
             LabeledSlider(name: "Translate Z", value: $geometry.translation.z, min: -0.5, max: 0.5)
@@ -30,7 +30,7 @@ struct GeometryUIView: View {
         .onChange(of: geometry.triangleVertexPositions) {
             NotificationCenter.default.post(name: .drawMessage, object: nil)
         }
-        .onChange(of: geometry.scale) {
+        .onChange(of: geometry.scaleValue) {
             NotificationCenter.default.post(name: .drawMessage, object: nil)
         }
         .onChange(of: geometry.translation) {

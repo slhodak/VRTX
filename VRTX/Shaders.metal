@@ -7,9 +7,9 @@ struct Uniforms {
 };
 
 struct VertexIn {
-    float3 position [[attribute(0)]];
-    float3 normal   [[attribute(1)]];
-    float4 color    [[attribute(2)]];
+    float3 position     [[attribute(0)]];
+    float3 normal       [[attribute(1)]];
+    float2 texCoords    [[attribute(2)]];
 };
 
 struct VertexOut {
@@ -24,7 +24,6 @@ vertex VertexOut vertex_main(VertexIn v_in [[stage_in]],
     VertexOut v_out;
     v_out.position = uniforms.projectionMatrix * uniforms.modelViewMatrix * float4(v_in.position, 1);
     v_out.eyeNormal = uniforms.modelViewMatrix * float4(v_in.normal, 0);
-    v_out.color = v_in.color;
     return v_out;
 }
 
