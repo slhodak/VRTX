@@ -23,7 +23,6 @@ struct Vertex {
 @Observable
 class Geometry {
     let logger = Logger(subsystem: "com.samhodak.VRTX", category: "Geometry")
-    var useModel = false
     var triangleVertexPositions: simd_float3x3 = simd_float3x3(
         [0.0, 2, -5],
         [2, -2, -5],
@@ -106,18 +105,4 @@ class Geometry {
 //        transformedVertices = translate(transformedVertices)
 //        return transformedVertices
 //    }
-}
-
-class Node {
-    var name: String
-    weak var parent: Node?
-    var children = [Node]()
-    var modelMatrix = matrix_identity_float4x4
-    var mesh: MTKMesh?
-    
-    var geometry: Geometry?
-    
-    init(name: String) {
-        self.name = name
-    }
 }

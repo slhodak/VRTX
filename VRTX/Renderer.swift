@@ -11,17 +11,18 @@ struct Uniforms {
     var projectionMatrix: simd_float4x4
 }
 
+@Observable
 class Renderer: NSObject, MTKViewDelegate {
     let logger = Logger(subsystem: "com.samhodak.VRTX", category: "Renderer")
     var view: MTKView
     var device: MTLDevice
     var commandQueue: MTLCommandQueue
     var pipelineState: MTLRenderPipelineState!
-    var modelVertexDescriptor: MDLVertexDescriptor?
+    var modelVertexDescriptor: MDLVertexDescriptor!
     var vertexDescriptor: MTLVertexDescriptor!
-    var geometry: Geometry
-    var meshes: [MTKMesh] = []
     var projection: Projection
+    var useModel = false
+    var nodes = [Node]()
     
     init?(metalView: MTKView) {
         guard let device = MTLCreateSystemDefaultDevice(),
@@ -32,10 +33,10 @@ class Renderer: NSObject, MTKViewDelegate {
         self.view = metalView
         self.device = device
         self.commandQueue = queue
-        self.geometry = Geometry()
-        self.projection = Projection(size: view.bounds.size)
-        self.modelVertexDescriptor = Renderer.getModelVertexDescriptor()
-        let vertexDescriptor = Renderer.makeVertexDescriptor()
+        self.projection = Projection(size: metalView.bounds.size)
+        let modelVertexDescriptor = Renderer.getModelVertexDescriptor()
+        self.modelVertexDescriptor = modelVertexDescriptor
+        let vertexDescriptor = MTKMetalVertexDescriptorFromModelIO(modelVertexDescriptor)!
         self.vertexDescriptor = vertexDescriptor
         self.pipelineState = Renderer.makePipelineState(device: device, vertexDescriptor: vertexDescriptor)
         
@@ -64,22 +65,25 @@ class Renderer: NSObject, MTKViewDelegate {
         projection.setupProjectionMatrixBuffer(for: device)
     }
     
-    func loadModel(vertexDescriptor: MDLVertexDescriptor) {
+    func loadModel(vertexDescriptor: MDLVertexDescriptor) -> ModelNode? {
         let modelURL = Bundle.main.url(forResource: "suzanne", withExtension: "obj")!
         let bufferAllocator = MTKMeshBufferAllocator(device: device)
         let asset = MDLAsset(url: modelURL, vertexDescriptor: vertexDescriptor, bufferAllocator: bufferAllocator)
-        var meshes: [MTKMesh] = []
         do {
-            (_, meshes) = try MTKMesh.newMeshes(asset: asset, device: device)
-            self.meshes = meshes
+            let mesh = try MTKMesh.newMeshes(asset: asset, device: device).metalKitMeshes.first!
+            return ModelNode(name: "suzanne", mesh: mesh)
         } catch {
-            fatalError("Could not extract meshes from Model I/O asset")
+            logger.error("Could not extract meshes from Model I/O asset")
+            return nil
         }
     }
     
-    func loadCustomGeometry() {
+    func loadCustomGeometry() -> CustomNode {
+        let geometry = Geometry()
         geometry.initVertices()
         geometry.setupVertexBuffer(for: device)
+        
+        return CustomNode(name: "custom", geometry: geometry)
     }
     
     static func getModelVertexDescriptor() -> MDLVertexDescriptor {
@@ -97,22 +101,6 @@ class Renderer: NSObject, MTKViewDelegate {
                                                             offset: MemoryLayout<Float>.size * 6,
                                                             bufferIndex: 0)
         vertexDescriptor.layouts[0] = MDLVertexBufferLayout(stride: MemoryLayout<Float>.size * 8)
-        
-        return vertexDescriptor
-    }
-    
-    static func makeVertexDescriptor() -> MTLVertexDescriptor {
-        let vertexDescriptor = MTLVertexDescriptor()
-        vertexDescriptor.attributes[0].format = .float3
-        vertexDescriptor.attributes[0].offset = 0
-        vertexDescriptor.attributes[0].bufferIndex = 0
-        vertexDescriptor.attributes[1].format = .float3
-        vertexDescriptor.attributes[1].offset = MemoryLayout<Float>.size * 3
-        vertexDescriptor.attributes[1].bufferIndex = 0
-        vertexDescriptor.attributes[2].format = .float2
-        vertexDescriptor.attributes[2].offset = MemoryLayout<Float>.size * 6
-        vertexDescriptor.attributes[2].bufferIndex = 0
-        vertexDescriptor.layouts[0].stride = MemoryLayout<Float>.size * 8
         
         return vertexDescriptor
     }
@@ -149,23 +137,14 @@ class Renderer: NSObject, MTKViewDelegate {
             return
         }
         
-        if geometry.useModel,
-           let vertexDescriptor = self.modelVertexDescriptor {
-            loadModel(vertexDescriptor: vertexDescriptor)
-        } else {
-            loadCustomGeometry()
-        }
-        
-        var modelMatrix: simd_float4x4!
-        if geometry.useModel {
-            modelMatrix = simd_float4x4(rotationAbout: simd_float3(0, 1, 0),
-                                        by: -Float.pi / 7) *  simd_float4x4(scaleBy: 0.25)
-        } else {
-            modelMatrix = geometry.modelMatrix * simd_float4x4(rotationAbout: simd_float3(0, 1, 0), by: Float.pi/2)
-        }
+        self.nodes = []
+        let modelNode = loadModel(vertexDescriptor: self.modelVertexDescriptor)!
+        self.nodes.append(modelNode)
+        let customNode = loadCustomGeometry()
+        self.nodes.append(customNode)
         
         let viewMatrix = simd_float4x4(translationBy: SIMD3<Float>(0, 0, -2))
-        let modelViewMatrix = viewMatrix * modelMatrix
+        let modelViewMatrix = viewMatrix * customNode.modelMatrix
         var uniforms = Uniforms(modelViewMatrix: modelViewMatrix,
                                 projectionMatrix: projection.projectionMatrix)
         
@@ -173,23 +152,21 @@ class Renderer: NSObject, MTKViewDelegate {
         renderEncoder.setVertexBytes(&uniforms, length: MemoryLayout<Uniforms>.size, index: 1)
         renderEncoder.setRenderPipelineState(pipelineState)
         
-        if geometry.useModel {
-            for mesh in meshes {
-                let vertexBuffer = mesh.vertexBuffers.first!
-                renderEncoder.setVertexBuffer(vertexBuffer.buffer, offset: vertexBuffer.offset, index: 0)
-             
-                for submesh in mesh.submeshes {
-                    let indexBuffer = submesh.indexBuffer
-                    renderEncoder.drawIndexedPrimitives(type: submesh.primitiveType,
-                                                         indexCount: submesh.indexCount,
-                                                         indexType: submesh.indexType,
-                                                         indexBuffer: indexBuffer.buffer,
-                                                         indexBufferOffset: indexBuffer.offset)
-                }
+        if useModel {
+            let vertexBuffer = modelNode.mesh.vertexBuffers.first!
+            renderEncoder.setVertexBuffer(vertexBuffer.buffer, offset: vertexBuffer.offset, index: 0)
+            
+            for submesh in modelNode.mesh.submeshes {
+                let indexBuffer = submesh.indexBuffer
+                renderEncoder.drawIndexedPrimitives(type: submesh.primitiveType,
+                                                    indexCount: submesh.indexCount,
+                                                    indexType: submesh.indexType,
+                                                    indexBuffer: indexBuffer.buffer,
+                                                    indexBufferOffset: indexBuffer.offset)
             }
         } else {
-            geometry.updateVertexBuffer(for: device)
-            renderEncoder.setVertexBuffer(geometry.vertexBuffer, offset: 0, index: 0)
+            customNode.geometry.updateVertexBuffer(for: device)
+            renderEncoder.setVertexBuffer(customNode.geometry.vertexBuffer, offset: 0, index: 0)
             renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 3)
         }
         
