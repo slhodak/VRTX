@@ -21,8 +21,9 @@ class Renderer: NSObject, MTKViewDelegate {
     var modelVertexDescriptor: MDLVertexDescriptor!
     var vertexDescriptor: MTLVertexDescriptor!
     var projection: Projection
-    var useModel = false
+    let rootNode = Node(name: "root")
     var nodes = [Node]()
+    let viewMatrix = simd_float4x4(translationBy: SIMD3<Float>(0, 0, -2))
     
     init?(metalView: MTKView) {
         guard let device = MTLCreateSystemDefaultDevice(),
@@ -42,11 +43,10 @@ class Renderer: NSObject, MTKViewDelegate {
         
         super.init()
         
-        self.nodes = []
-        let modelNode = loadModel(vertexDescriptor: self.modelVertexDescriptor)!
-        self.nodes.append(modelNode)
-//        let customNode = loadCustomGeometry()
-//        self.nodes.append(customNode)
+//        let modelNode = loadModel(vertexDescriptor: self.modelVertexDescriptor)!
+//        self.rootNode.children.append(modelNode)
+        let customNode = loadCustomGeometry()
+        self.rootNode.children.append(customNode)
         
         metalView.device = device
         metalView.delegate = self
@@ -143,21 +143,30 @@ class Renderer: NSObject, MTKViewDelegate {
             return
         }
         
-        let viewMatrix = simd_float4x4(translationBy: SIMD3<Float>(0, 0, -2))
-        let modelNode = self.nodes[0] as! ModelNode
-        let modelViewMatrix = viewMatrix * modelNode.getModelMatrix()
+        projection.setupProjectionMatrixBuffer(for: device)
+        renderEncoder.setRenderPipelineState(pipelineState)
+        drawNodeRecursive(self.rootNode, parentTransform: matrix_identity_float4x4, renderEncoder: renderEncoder)
+        renderEncoder.endEncoding()
+        commandBuffer.present(drawable)
+        commandBuffer.commit()
+    }
+    
+    func drawNodeRecursive(_ node: Node, parentTransform: simd_float4x4, renderEncoder: MTLRenderCommandEncoder) {
+        let modelMatrix = parentTransform * node.getModelMatrix()
+        let modelViewMatrix = modelMatrix * viewMatrix
         var uniforms = Uniforms(modelViewMatrix: modelViewMatrix,
                                 projectionMatrix: projection.projectionMatrix)
-        
-        projection.setupProjectionMatrixBuffer(for: device)
         renderEncoder.setVertexBytes(&uniforms, length: MemoryLayout<Uniforms>.size, index: 1)
-        renderEncoder.setRenderPipelineState(pipelineState)
         
-        if useModel {
-            let vertexBuffer = modelNode.mesh.vertexBuffers.first!
+        if let node = node as? ModelNode {
+            let vertexBuffer = node.mesh.vertexBuffers.first!
             renderEncoder.setVertexBuffer(vertexBuffer.buffer, offset: vertexBuffer.offset, index: 0)
             
-            for submesh in modelNode.mesh.submeshes {
+            var uniforms = Uniforms(modelViewMatrix: modelViewMatrix,
+                                    projectionMatrix: projection.projectionMatrix)
+            renderEncoder.setVertexBytes(&uniforms, length: MemoryLayout<Uniforms>.size, index: 1)
+            
+            for submesh in node.mesh.submeshes {
                 let indexBuffer = submesh.indexBuffer
                 renderEncoder.drawIndexedPrimitives(type: submesh.primitiveType,
                                                     indexCount: submesh.indexCount,
@@ -165,16 +174,15 @@ class Renderer: NSObject, MTKViewDelegate {
                                                     indexBuffer: indexBuffer.buffer,
                                                     indexBufferOffset: indexBuffer.offset)
             }
-        } else {
-//            customNode.geometry.updateVertexBuffer(for: device)
-//            renderEncoder.setVertexBuffer(customNode.geometry.vertexBuffer, offset: 0, index: 0)
-//            renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 3)
+        } else if let node = node as? CustomNode {
+            node.geometry.updateVertexBuffer(for: device)
+            renderEncoder.setVertexBuffer(node.geometry.vertexBuffer, offset: 0, index: 0)
+            renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 3)
         }
-        
-        renderEncoder.endEncoding()
-        
-        commandBuffer.present(drawable)
-        commandBuffer.commit()
+    
+        for childNode in node.children {
+            drawNodeRecursive(childNode, parentTransform: node.modelMatrix, renderEncoder: renderEncoder)
+        }
     }
     
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {

@@ -12,19 +12,15 @@ struct InputsView: View {
                     Text("Draw")
                 }
                 
-                Toggle(isOn: $renderer.useModel) {
-                    Text("Use Model")
-                }
-                
-                ForEach(renderer.nodes) { node in
+                ForEach(renderer.rootNode.children) { node in
                     NodeUIView(node: node)
+                    if let node = node as? CustomNode {
+                        CustomNodeUIView(geometry: node.geometry)
+                    }
                 }
                 
                 ProjectionUIView(renderer: renderer, projection: renderer.projection)
             }
-        }
-        .onChange(of: renderer.useModel) {
-            NotificationCenter.default.post(name: .drawMessage, object: nil)
         }
     }
 }
