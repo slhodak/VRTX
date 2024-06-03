@@ -101,7 +101,6 @@
 		17E962C72BF6D87E00F0A227 /* VRTX */ = {
 			isa = PBXGroup;
 			children = (
-				179B2FAF2BFFC05300F02A3A /* MathViews */,
 				174AA7172BF99B7E002B03A4 /* VRTXApp.swift */,
 				178CD6292C0E8EAF0070C636 /* ContentView.swift */,
 				17E962DE2BF7BF5800F0A227 /* Renderer.swift */,
@@ -112,11 +111,12 @@
 				17E962E02BF7BFA500F0A227 /* InputsView.swift */,
 				17ED9E622BFA6D3900268A2A /* ProjectionUIView.swift */,
 				17ED9E602BFA6D2D00268A2A /* NodeUIView.swift */,
+				17ED9E662BFAAA5400268A2A /* LabeledSlider.swift */,
+				17E962DC2BF6E43300F0A227 /* Shaders.metal */,
+				179B2FAF2BFFC05300F02A3A /* MathViews */,
 				17E962E22BF7D0D100F0A227 /* Extension */,
 				17E962CC2BF6D87F00F0A227 /* Assets.xcassets */,
 				17E962D12BF6D87F00F0A227 /* VRTX.entitlements */,
-				17E962DC2BF6E43300F0A227 /* Shaders.metal */,
-				17ED9E662BFAAA5400268A2A /* LabeledSlider.swift */,
 			);
 			path = VRTX;
 			sourceTree = "<group>";
