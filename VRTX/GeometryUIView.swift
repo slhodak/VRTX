@@ -44,8 +44,8 @@ struct NodeUIView: View {
             LabeledSlider(name: "TranslateX", value: $node.translation.x)
             LabeledSlider(name: "TranslateY", value: $node.translation.y)
             LabeledSlider(name: "TranslateZ", value: $node.translation.z)
-//            LabeledSlider(name: "Rotation Axis", value: $node.rotationAngle)
-//            LabeledSlider(name: "RotationAngle", value: $node.rotationAxis)
+            VectorView(vector: $node.rotationAxis)
+            LabeledSlider(name: "RotationAngle", value: $node.rotationAngle, min: 0, max: 2)
         }
     }
 }

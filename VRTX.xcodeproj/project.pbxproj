@@ -10,6 +10,7 @@
 		174AA7182BF99B7E002B03A4 /* VRTXApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 174AA7172BF99B7E002B03A4 /* VRTXApp.swift */; };
 		174AA71A2BF9A384002B03A4 /* MetalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 174AA7192BF9A384002B03A4 /* MetalView.swift */; };
 		1755526B2C0E0CE400DF7A15 /* Scene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1755526A2C0E0CE400DF7A15 /* Scene.swift */; };
+		1755526E2C0E14D600DF7A15 /* VectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1755526D2C0E14D600DF7A15 /* VectorView.swift */; };
 		179B2FB12BFFC06000F02A3A /* MatrixViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 179B2FB02BFFC06000F02A3A /* MatrixViews.swift */; };
 		17D46BA32C0B8D6800B14973 /* suzanne.obj in Resources */ = {isa = PBXBuildFile; fileRef = 17D46BA22C0B8D6800B14973 /* suzanne.obj */; };
 		17E962CD2BF6D87F00F0A227 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 17E962CC2BF6D87F00F0A227 /* Assets.xcassets */; };
@@ -29,6 +30,7 @@
 		174AA7172BF99B7E002B03A4 /* VRTXApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VRTXApp.swift; sourceTree = "<group>"; };
 		174AA7192BF9A384002B03A4 /* MetalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalView.swift; sourceTree = "<group>"; };
 		1755526A2C0E0CE400DF7A15 /* Scene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scene.swift; sourceTree = "<group>"; };
+		1755526D2C0E14D600DF7A15 /* VectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VectorView.swift; sourceTree = "<group>"; };
 		179B2FB02BFFC06000F02A3A /* MatrixViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatrixViews.swift; sourceTree = "<group>"; };
 		17D46BA22C0B8D6800B14973 /* suzanne.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = suzanne.obj; sourceTree = "<group>"; };
 		17E962C52BF6D87E00F0A227 /* VRTX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VRTX.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -63,6 +65,7 @@
 			isa = PBXGroup;
 			children = (
 				179B2FB02BFFC06000F02A3A /* MatrixViews.swift */,
+				1755526D2C0E14D600DF7A15 /* VectorView.swift */,
 			);
 			path = MathViews;
 			sourceTree = "<group>";
@@ -203,6 +206,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1755526E2C0E14D600DF7A15 /* VectorView.swift in Sources */,
 				17E962DF2BF7BF5800F0A227 /* Renderer.swift in Sources */,
 				17ED9E632BFA6D3900268A2A /* ProjectionUIView.swift in Sources */,
 				174AA71A2BF9A384002B03A4 /* MetalView.swift in Sources */,

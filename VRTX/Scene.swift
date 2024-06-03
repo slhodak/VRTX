@@ -24,7 +24,7 @@ class Node: Identifiable {
     func getModelMatrix() -> simd_float4x4 {
         let scaleMatrix = simd_float4x4(scaleBy: scale)
         let translate = simd_float4x4(translationBy: translation)
-        let rotate = simd_float4x4(rotationAbout: rotationAxis, by: rotationAngle)
+        let rotate = simd_float4x4(rotationAbout: rotationAxis, by: rotationAngle * Float.pi)
         return modelMatrix * scaleMatrix * rotate * translate
     }
 }
