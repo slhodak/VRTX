@@ -1,4 +1,5 @@
 import SwiftUI
+import simd
 import os
 
 struct GeometryUIView: View {
@@ -30,5 +31,21 @@ struct GeometryUIView: View {
             NotificationCenter.default.post(name: .drawMessage, object: nil)
         }
         .padding()
+    }
+}
+
+struct NodeUIView: View {
+    @State var node: Node
+    
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text(node.name)
+            LabeledSlider(name: "Scale", value: $node.scale)
+            LabeledSlider(name: "TranslateX", value: $node.translation.x)
+            LabeledSlider(name: "TranslateY", value: $node.translation.y)
+            LabeledSlider(name: "TranslateZ", value: $node.translation.z)
+//            LabeledSlider(name: "Rotation Axis", value: $node.rotationAngle)
+//            LabeledSlider(name: "RotationAngle", value: $node.rotationAxis)
+        }
     }
 }

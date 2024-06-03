@@ -42,6 +42,12 @@ class Renderer: NSObject, MTKViewDelegate {
         
         super.init()
         
+        self.nodes = []
+        let modelNode = loadModel(vertexDescriptor: self.modelVertexDescriptor)!
+        self.nodes.append(modelNode)
+//        let customNode = loadCustomGeometry()
+//        self.nodes.append(customNode)
+        
         metalView.device = device
         metalView.delegate = self
         metalView.isPaused = true
@@ -137,14 +143,9 @@ class Renderer: NSObject, MTKViewDelegate {
             return
         }
         
-        self.nodes = []
-        let modelNode = loadModel(vertexDescriptor: self.modelVertexDescriptor)!
-        self.nodes.append(modelNode)
-        let customNode = loadCustomGeometry()
-        self.nodes.append(customNode)
-        
         let viewMatrix = simd_float4x4(translationBy: SIMD3<Float>(0, 0, -2))
-        let modelViewMatrix = viewMatrix * customNode.modelMatrix
+        let modelNode = self.nodes[0] as! ModelNode
+        let modelViewMatrix = viewMatrix * modelNode.getModelMatrix()
         var uniforms = Uniforms(modelViewMatrix: modelViewMatrix,
                                 projectionMatrix: projection.projectionMatrix)
         
@@ -165,9 +166,9 @@ class Renderer: NSObject, MTKViewDelegate {
                                                     indexBufferOffset: indexBuffer.offset)
             }
         } else {
-            customNode.geometry.updateVertexBuffer(for: device)
-            renderEncoder.setVertexBuffer(customNode.geometry.vertexBuffer, offset: 0, index: 0)
-            renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 3)
+//            customNode.geometry.updateVertexBuffer(for: device)
+//            renderEncoder.setVertexBuffer(customNode.geometry.vertexBuffer, offset: 0, index: 0)
+//            renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 3)
         }
         
         renderEncoder.endEncoding()

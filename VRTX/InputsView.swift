@@ -17,10 +17,7 @@ struct InputsView: View {
                 }
                 
                 ForEach(renderer.nodes) { node in
-                    Text(node.name)
-                    if let node = node as? CustomNode {
-                        GeometryUIView(geometry: node.geometry)
-                    }
+                    NodeUIView(node: node)
                 }
                 
                 ProjectionUIView(renderer: renderer, projection: renderer.projection)
