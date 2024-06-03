@@ -2,22 +2,6 @@ import SwiftUI
 import simd
 import os
 
-struct CustomNodeUIView: View {
-    let logger = Logger(subsystem: "com.samhodak.VRTX", category: "GeometryUIViewController")
-    @State var geometry: Geometry
-    
-    var body: some View {
-        VStack(alignment: .leading) {
-            Text("Triangle Vertices")
-            Matrix3x3View(mat: $geometry.triangleVertexPositions)
-        }
-        .onChange(of: geometry.triangleVertexPositions) {
-            NotificationCenter.default.post(name: .drawMessage, object: nil)
-        }
-        .padding()
-    }
-}
-
 struct NodeUIView: View {
     @State var node: Node
     
@@ -31,5 +15,21 @@ struct NodeUIView: View {
             VectorView(vector: $node.rotationAxis)
             LabeledSlider(name: "RotationAngle", value: $node.rotationAngle, min: 0, max: 2)
         }
+    }
+}
+
+struct CustomNodeUIView: View {
+    let logger = Logger(subsystem: "com.samhodak.VRTX", category: "GeometryUIViewController")
+    @State var geometry: Geometry
+    
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text("Triangle Vertices")
+            Matrix3x3View(mat: $geometry.triangleVertexPositions)
+        }
+        .onChange(of: geometry.triangleVertexPositions) {
+            NotificationCenter.default.post(name: .drawMessage, object: nil)
+        }
+        .padding()
     }
 }

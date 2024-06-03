@@ -20,7 +20,7 @@
 		17E962E42BF7D0DD00F0A227 /* Float.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17E962E32BF7D0DD00F0A227 /* Float.swift */; };
 		17ED9E5D2BFA6CAC00268A2A /* Projection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17ED9E5C2BFA6CAC00268A2A /* Projection.swift */; };
 		17ED9E5F2BFA6CB900268A2A /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17ED9E5E2BFA6CB900268A2A /* Geometry.swift */; };
-		17ED9E612BFA6D2D00268A2A /* GeometryUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17ED9E602BFA6D2D00268A2A /* GeometryUIView.swift */; };
+		17ED9E612BFA6D2D00268A2A /* NodeUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17ED9E602BFA6D2D00268A2A /* NodeUIView.swift */; };
 		17ED9E632BFA6D3900268A2A /* ProjectionUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17ED9E622BFA6D3900268A2A /* ProjectionUIView.swift */; };
 		17ED9E652BFAA52300268A2A /* SIMD.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17ED9E642BFAA52300268A2A /* SIMD.swift */; };
 		17ED9E672BFAAA5400268A2A /* LabeledSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17ED9E662BFAAA5400268A2A /* LabeledSlider.swift */; };
@@ -44,7 +44,7 @@
 		17E962E32BF7D0DD00F0A227 /* Float.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Float.swift; sourceTree = "<group>"; };
 		17ED9E5C2BFA6CAC00268A2A /* Projection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Projection.swift; sourceTree = "<group>"; };
 		17ED9E5E2BFA6CB900268A2A /* Geometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
-		17ED9E602BFA6D2D00268A2A /* GeometryUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeometryUIView.swift; sourceTree = "<group>"; };
+		17ED9E602BFA6D2D00268A2A /* NodeUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NodeUIView.swift; sourceTree = "<group>"; };
 		17ED9E622BFA6D3900268A2A /* ProjectionUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectionUIView.swift; sourceTree = "<group>"; };
 		17ED9E642BFAA52300268A2A /* SIMD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SIMD.swift; sourceTree = "<group>"; };
 		17ED9E662BFAAA5400268A2A /* LabeledSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabeledSlider.swift; sourceTree = "<group>"; };
@@ -108,7 +108,7 @@
 				174AA7192BF9A384002B03A4 /* MetalView.swift */,
 				17E962E02BF7BFA500F0A227 /* InputsView.swift */,
 				17ED9E622BFA6D3900268A2A /* ProjectionUIView.swift */,
-				17ED9E602BFA6D2D00268A2A /* GeometryUIView.swift */,
+				17ED9E602BFA6D2D00268A2A /* NodeUIView.swift */,
 				17E962E22BF7D0D100F0A227 /* Extension */,
 				17E962CC2BF6D87F00F0A227 /* Assets.xcassets */,
 				17E962D12BF6D87F00F0A227 /* VRTX.entitlements */,
@@ -217,7 +217,7 @@
 				179B2FB12BFFC06000F02A3A /* MatrixViews.swift in Sources */,
 				17ED9E652BFAA52300268A2A /* SIMD.swift in Sources */,
 				17ED9E5F2BFA6CB900268A2A /* Geometry.swift in Sources */,
-				17ED9E612BFA6D2D00268A2A /* GeometryUIView.swift in Sources */,
+				17ED9E612BFA6D2D00268A2A /* NodeUIView.swift in Sources */,
 				17ED9E5D2BFA6CAC00268A2A /* Projection.swift in Sources */,
 				174AA7182BF99B7E002B03A4 /* VRTXApp.swift in Sources */,
 				17E962DD2BF6E43300F0A227 /* Shaders.metal in Sources */,
