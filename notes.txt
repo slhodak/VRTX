@@ -1,0 +1,29 @@
+From model io vertex descriptor:
+Optional(<MTLVertexDescriptorInternal: 0x60000180f7e0>
+    Buffer 0: 
+        stepFunction = MTLVertexStepFunctionPerVertex 
+        stride = 32 
+        Attribute 0: 
+            offset = 0 
+            format = MTLAttributeFormatFloat3 
+        Attribute 1: 
+            offset = 12 
+            format = MTLAttributeFormatFloat3 
+        Attribute 2: 
+            offset = 24 
+            format = MTLAttributeFormatFloat2)
+
+Manually-made vertex descriptor:
+<MTLVertexDescriptorInternal: 0x60000180faa0>
+    Buffer 0: 
+        stepFunction = MTLVertexStepFunctionPerVertex 
+        stride = 32 
+        Attribute 0: 
+            offset = 0 
+            format = MTLAttributeFormatFloat3 
+        Attribute 1: 
+            offset = 12 
+            format = MTLAttributeFormatFloat3 
+        Attribute 2: 
+            offset = 24 
+            format = MTLAttributeFormatFloat2
