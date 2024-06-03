@@ -43,8 +43,8 @@ class Renderer: NSObject, MTKViewDelegate {
         
         super.init()
         
-//        let modelNode = loadModel(vertexDescriptor: self.modelVertexDescriptor)!
-//        self.rootNode.children.append(modelNode)
+        let modelNode = loadModel(vertexDescriptor: self.modelVertexDescriptor)!
+        self.rootNode.children.append(modelNode)
         let customNode = loadCustomGeometry()
         self.rootNode.children.append(customNode)
         
