@@ -2,8 +2,9 @@
 using namespace metal;
 
 struct Uniforms {
-    float4x4 modelViewMatrix;
-    float4x4 projectionMatrix;
+    float4x4 viewProjectionMatrix;
+    float4x4 modelMatrix;
+    float3x3 normalMatrix;
 };
 
 struct VertexIn {
@@ -14,20 +15,23 @@ struct VertexIn {
 
 struct VertexOut {
     float4 position [[position]];
-    float4 eyeNormal;
-    float4 eyePosition;
+    float3 worldNormal;
+    float3 worldPosition;
     float4 color;
 };
 
 vertex VertexOut vertex_main(VertexIn v_in [[stage_in]],
                              constant Uniforms &uniforms [[buffer(1)]]) {
     VertexOut v_out;
-    v_out.position = uniforms.projectionMatrix * uniforms.modelViewMatrix * float4(v_in.position, 1);
-    v_out.eyeNormal = uniforms.modelViewMatrix * float4(v_in.normal, 0);
+    float4 worldPosition = uniforms.modelMatrix * float4(v_in.position, 1);
+    v_out.position = uniforms.viewProjectionMatrix * worldPosition;
+    v_out.worldPosition = worldPosition.xyz;
+    v_out.worldNormal = uniforms.normalMatrix * v_in.normal;
     return v_out;
 }
 
 fragment float4 fragment_main(VertexOut frag_in [[stage_in]]) {
-    float3 normal = normalize(frag_in.eyeNormal.xyz);
+    float3 normal = normalize(frag_in.worldNormal.xyz);
     return float4(abs(normal), 1);
 }
+

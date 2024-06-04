@@ -72,4 +72,14 @@ extension simd_float4x4 {
         )
         return P
     }
+    
+    var normalMatrix: simd_float3x3 {
+        let upperLeft = simd_float3x3(
+            simd_float3(self.columns.0.x, self.columns.0.y, self.columns.0.z),
+            simd_float3(self.columns.1.x, self.columns.1.y, self.columns.1.z),
+            simd_float3(self.columns.2.x, self.columns.2.y, self.columns.2.z)
+        )
+        
+        return upperLeft.transpose.inverse
+    }
 }
