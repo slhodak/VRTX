@@ -2,6 +2,7 @@ import Foundation
 import MetalKit
 import simd
 
+@Observable
 class Node: Identifiable {
     let id = UUID()
     var name: String
