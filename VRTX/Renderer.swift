@@ -43,11 +43,6 @@ class Renderer: NSObject, MTKViewDelegate {
         let customNode = loadCustomGeometry()
         self.rootNode.children.append(customNode)
         
-        metalView.device = device
-        metalView.delegate = self
-        metalView.isPaused = true
-        metalView.enableSetNeedsDisplay = true
-        
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(handleDrawMessage(_:)),
                                                name: .drawMessage,
