@@ -25,15 +25,10 @@ class Renderer: NSObject, MTKViewDelegate {
     var nodes = [Node]()
     let viewMatrix = simd_float4x4(translationBy: SIMD3<Float>(0, 0, -2))
     
-    init?(metalView: MTKView) {
-        guard let device = MTLCreateSystemDefaultDevice(),
-              let queue = device.makeCommandQueue() else {
-            return nil
-        }
-        
-        self.view = metalView
+    init(device: MTLDevice, metalView: MTKView) {
         self.device = device
-        self.commandQueue = queue
+        self.view = metalView
+        self.commandQueue = device.makeCommandQueue()!
         self.projection = Projection(size: metalView.bounds.size)
         let modelVertexDescriptor = Renderer.getModelVertexDescriptor()
         self.modelVertexDescriptor = modelVertexDescriptor

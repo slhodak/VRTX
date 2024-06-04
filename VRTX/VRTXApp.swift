@@ -7,11 +7,11 @@ struct VRTXApp: App {
     var metalView: MTKView
     
     init() {
-        metalView = MTKView()
-        guard let renderer = Renderer(metalView: metalView) else {
-            fatalError("Could not initialize renderer")
+        self.metalView = MTKView()
+        guard let device = MTLCreateSystemDefaultDevice() else {
+            fatalError("Could not create system default Metal device")
         }
-        self.renderer = renderer
+        self.renderer = Renderer(device: device, metalView: metalView)
     }
     
     var body: some Scene {
