@@ -25,7 +25,6 @@ class Renderer: NSObject, MTKViewDelegate {
     let rootNode = Node(name: "root")
     var nodes = [Node]()
     let viewMatrix = simd_float4x4(translationBy: SIMD3<Float>(0, 0, -2))
-//    let viewMatrix = matrix_identity_float4x4
     
     init(device: MTLDevice, metalView: MTKView) {
         self.device = device

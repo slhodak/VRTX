@@ -22,6 +22,6 @@ struct VRTXApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView(renderer: renderer, metalView: metalView)
-        }
+        }.windowResizability(.contentSize)
     }
 }
