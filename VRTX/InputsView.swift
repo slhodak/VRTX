@@ -16,19 +16,3 @@ struct InputsView: View {
     }
 }
 
-struct NodesView: View {
-    @State var renderer: Renderer
-    
-    var body: some View {
-        VStack(alignment: .leading) {
-            Text("Nodes").bold()
-            ForEach(renderer.rootNode.children) { node in
-                NodeUIView(node: node)
-                if let node = node as? CustomNode {
-                    CustomNodeUIView(geometry: node.geometry)
-                }
-                Divider()
-            }
-        }.padding()
-    }
-}
