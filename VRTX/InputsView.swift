@@ -7,20 +7,28 @@ struct InputsView: View {
     
     var body: some View {
         ScrollView {
-            VStack {
-                Button(action: renderer.draw) {
-                    Text("Draw")
-                }
-                
-                ForEach(renderer.rootNode.children) { node in
-                    NodeUIView(node: node)
-                    if let node = node as? CustomNode {
-                        CustomNodeUIView(geometry: node.geometry)
-                    }
-                }
+            VStack(alignment: .leading) {
+                NodesView(renderer: renderer)
                 
                 ProjectionUIView(renderer: renderer, projection: renderer.projection)
             }
         }
+    }
+}
+
+struct NodesView: View {
+    @State var renderer: Renderer
+    
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text("Nodes").bold()
+            ForEach(renderer.rootNode.children) { node in
+                NodeUIView(node: node)
+                if let node = node as? CustomNode {
+                    CustomNodeUIView(geometry: node.geometry)
+                }
+                Divider()
+            }
+        }.padding()
     }
 }

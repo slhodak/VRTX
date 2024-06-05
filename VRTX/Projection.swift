@@ -6,33 +6,25 @@ import simd
 class Projection {
     var projectionMatrix = simd_float4x4(1)
     var projectionMatrixBuffer: MTLBuffer?
-    var projectionPerspectiveAspect: Float!
+    var projectionPerspectiveAspect: Float
     var usePerspectiveProjection: Bool = true
     var useProjection: Bool = true
-    var perspectiveFOVYDenominator: Float = 3.0
+    var perspectiveFOVYRadians: Float = Float.pi * 0.25
     var orthographicLeft: Float = 0
     var orthographicRight: Float = 0
     var orthographicTop: Float = 0
     var orthographicBottom: Float = 0
-    var projectionNear: Float = 0.1
-    var projectionFar: Float = 100.0
+    var projectionNear: Float = 0.0
+    var projectionFar: Float = -100.0
     
-    init(size: CGSize) {
-        setProjectionMatrixAspect(for: CGSize(width: 500, height: 500))
-    }
-    
-    func perspectiveFOVYRadians() -> Float {
-        return Float.pi / perspectiveFOVYDenominator
-    }
-    
-    func setProjectionMatrixAspect(for size: CGSize) {
-        projectionPerspectiveAspect = Float(size.width / size.height)
+    init(aspect: Float) {
+        projectionPerspectiveAspect = aspect
     }
     
     func setupProjectionMatrixBuffer(for device: MTLDevice) {
         if useProjection {
             if usePerspectiveProjection {
-                projectionMatrix = simd_float4x4(perspectiveProjectionFov: perspectiveFOVYRadians(),
+                projectionMatrix = simd_float4x4(perspectiveProjectionFov: perspectiveFOVYRadians,
                                                  aspect: projectionPerspectiveAspect,
                                                  near: projectionNear,
                                                  far: projectionFar)

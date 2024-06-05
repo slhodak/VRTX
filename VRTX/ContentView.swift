@@ -4,7 +4,6 @@ import MetalKit
 struct ContentView: View {
     let renderer: Renderer
     let metalView: MTKView
-    let aspect: CGFloat = 1.78
     
     var body: some View {
         HStack(spacing: 0) {
@@ -16,7 +15,7 @@ struct ContentView: View {
             VStack {
                 Spacer()
                 MetalView(metalView: metalView)
-                    .frame(height: 500 / aspect)
+                    .frame(height: 500 / CGFloat(Renderer.aspectRatio))
                 Spacer()
             }
                 .frame(width: 500)

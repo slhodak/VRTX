@@ -22,6 +22,7 @@ class Renderer: NSObject, MTKViewDelegate {
     var modelVertexDescriptor: MDLVertexDescriptor!
     var vertexDescriptor: MTLVertexDescriptor!
     var projection: Projection
+    static let aspectRatio: Float = 1.78
     let rootNode = Node(name: "root")
     var nodes = [Node]()
     let viewMatrix = simd_float4x4(translationBy: SIMD3<Float>(0, 0, -2))
@@ -30,7 +31,7 @@ class Renderer: NSObject, MTKViewDelegate {
         self.device = device
         self.view = metalView
         self.commandQueue = device.makeCommandQueue()!
-        self.projection = Projection(size: metalView.bounds.size)
+        self.projection = Projection(aspect: Renderer.aspectRatio)
         let modelVertexDescriptor = Renderer.getModelVertexDescriptor()
         self.modelVertexDescriptor = modelVertexDescriptor
         let vertexDescriptor = MTKMetalVertexDescriptorFromModelIO(modelVertexDescriptor)!
