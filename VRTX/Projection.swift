@@ -5,7 +5,6 @@ import simd
 @Observable
 class Projection {
     var projectionMatrix = simd_float4x4(1)
-    var projectionMatrixBuffer: MTLBuffer?
     var projectionPerspectiveAspect: Float
     var usePerspectiveProjection: Bool = true
     var useProjection: Bool = true
@@ -21,7 +20,7 @@ class Projection {
         projectionPerspectiveAspect = aspect
     }
     
-    func setupProjectionMatrixBuffer(for device: MTLDevice) {
+    func updateProjectionMatrix(for device: MTLDevice) {
         if useProjection {
             if usePerspectiveProjection {
                 projectionMatrix = simd_float4x4(perspectiveProjectionFov: perspectiveFOVYRadians,
@@ -39,9 +38,5 @@ class Projection {
             
             //logger.debug("Projection matrix set with fov: \(self.perspectiveFOVRadians()), aspect: \(self.projectionPerspectiveAspect), near: \(self.projectionNear), far: \(self.projectionFar)")
         }
-        
-        projectionMatrixBuffer = device.makeBuffer(bytes: &projectionMatrix,
-                                                   length: MemoryLayout<simd_float4x4>.stride,
-                                                   options: .storageModeShared)
     }
 }

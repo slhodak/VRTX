@@ -64,10 +64,6 @@ class Renderer: NSObject, MTKViewDelegate {
         draw()
     }
     
-    func updateProjectionMatrixBuffer() {
-        projection.setupProjectionMatrixBuffer(for: device)
-    }
-    
     func loadModel(vertexDescriptor: MDLVertexDescriptor) -> ModelNode? {
         let modelURL = Bundle.main.url(forResource: "teapot", withExtension: "obj")!
         let bufferAllocator = MTKMeshBufferAllocator(device: device)
@@ -150,7 +146,6 @@ class Renderer: NSObject, MTKViewDelegate {
             return
         }
         
-        projection.setupProjectionMatrixBuffer(for: device)
         renderEncoder.setDepthStencilState(depthStencilState)
         renderEncoder.setRenderPipelineState(pipelineState)
         drawNodeRecursive(self.rootNode,
@@ -163,6 +158,7 @@ class Renderer: NSObject, MTKViewDelegate {
     
     func drawNodeRecursive(_ node: Node, parentTransform: simd_float4x4, renderEncoder: MTLRenderCommandEncoder) {
         let modelMatrix = parentTransform * node.getModelMatrix()
+        projection.updateProjectionMatrix(for: device)
         let viewProjectionMatrix = projection.projectionMatrix * viewMatrix
         var uniforms = Uniforms(viewProjectionMatrix: viewProjectionMatrix,
                                 modelMatrix: modelMatrix,
