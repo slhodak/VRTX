@@ -4,20 +4,9 @@ import simd
 import os
 
 struct Vertex {
-    var position: simd_float3
-    var normal: simd_float3
-    var texCoords: simd_float2
-    
-    func scale(by scalar: Float) -> Vertex {
-        return Vertex(position: [
-            position.x * scalar,
-            position.y * scalar,
-            position.z * scalar
-        ],
-                      normal: self.normal,
-                      texCoords: self.texCoords
-        )
-    }
+    var position: (Float, Float, Float)
+    var normal: (Float, Float, Float)
+    var texCoords: (Float, Float)
 }
 
 @Observable
@@ -33,16 +22,18 @@ class Geometry {
         [0.0, 1.0, 0.0],
         [0.0, 0.0, 1.0]
     )
-    var modelMatrix = simd_float4x4(1)
-    
     var vertices = [Vertex]()
     var vertexBuffer: MTLBuffer!
-    var scaleValue: Float = 1.0
-    var translation: vector_float3 = [0, 0, 0]
     
     func initVertices() {
         for i in 0..<3 {
-            vertices.append(Vertex(position: triangleVertexPositions[i], normal: getNormals(), texCoords: simd_float2(0, 0)))
+            let regularFloatVertexPosition = (triangleVertexPositions[i].x,
+                                              triangleVertexPositions[i].y,
+                                              triangleVertexPositions[i].z)
+            
+            vertices.append(Vertex(position: regularFloatVertexPosition,
+                                   normal: getNormals(),
+                                   texCoords: (0.0, 0.0)))
         }
     }
     
@@ -79,7 +70,7 @@ class Geometry {
         }
     }
     
-    func getNormals() -> simd_float3 {
+    func getNormals() -> (Float, Float, Float) {
         // Calculate vectors for two edges of the triangle
         let edge1 = triangleVertexPositions[1] - triangleVertexPositions[0]
         let edge2 = triangleVertexPositions[2] - triangleVertexPositions[0]
@@ -88,21 +79,8 @@ class Geometry {
         let normal = simd_cross(edge1, edge2)
 
         // Normalize the resulting vector to get the unit normal
-        return simd_normalize(normal)
+        let normalized = simd_normalize(normal)
+        // convert this to [[Float]]
+        return (normalized.x, normalized.y, normalized.z)
     }
-    
-    func scale() {
-        self.modelMatrix *= simd_float4x4(scaleBy: scaleValue)
-    }
-    
-    func translate() {
-        self.modelMatrix *= simd_float4x4(translationBy: translation)
-    }
-    
-//    func transform(_ vertices: [Vertex]) -> [Vertex] {
-//        /// In the future, can apply other transformations here
-//        var transformedVertices = scale(vertices)
-//        transformedVertices = translate(transformedVertices)
-//        return transformedVertices
-//    }
 }
