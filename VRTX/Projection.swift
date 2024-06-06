@@ -4,7 +4,7 @@ import simd
 
 @Observable
 class Projection {
-    var projectionMatrix = simd_float4x4(1)
+    var projectionMatrix = matrix_identity_float4x4
     var projectionPerspectiveAspect: Float
     var usePerspectiveProjection: Bool = true
     var useProjection: Bool = true
@@ -35,6 +35,8 @@ class Projection {
                                                                     nearZ: projectionNear,
                                                                     farZ: projectionFar)
             }
+        } else {
+            projectionMatrix = matrix_identity_float4x4
         }
     }
 }
