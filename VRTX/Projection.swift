@@ -35,8 +35,6 @@ class Projection {
                                                                     nearZ: projectionNear,
                                                                     farZ: projectionFar)
             }
-            
-            //logger.debug("Projection matrix set with fov: \(self.perspectiveFOVRadians()), aspect: \(self.projectionPerspectiveAspect), near: \(self.projectionNear), far: \(self.projectionFar)")
         }
     }
 }

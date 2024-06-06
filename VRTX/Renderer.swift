@@ -60,7 +60,6 @@ class Renderer: NSObject, MTKViewDelegate {
     }
     
     @objc func handleDrawMessage(_ notification: Notification) {
-        logger.debug("Handling draw message: \(String(describing: notification.object))")
         draw()
     }
     
@@ -133,12 +132,10 @@ class Renderer: NSObject, MTKViewDelegate {
     }
     
     func draw() {
-        logger.debug("Custom draw() called")
         view.setNeedsDisplay(view.bounds)
     }
     
     func draw(in view: MTKView) {
-        logger.debug("Builtin draw() called")
         guard let drawable = view.currentDrawable,
               let renderPassDescriptor = view.currentRenderPassDescriptor,
               let commandBuffer = commandQueue.makeCommandBuffer(),
