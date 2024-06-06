@@ -28,7 +28,7 @@ struct CustomNodeUIView: View {
             Matrix3x3View(mat: $geometry.triangleVertexPositions)
         }
         .onChange(of: geometry.triangleVertexPositions) {
-            NotificationCenter.default.post(name: .drawMessage, object: nil)
+            NotificationCenter.default.post(name: .drawMessage, object: self)
         }
         .padding()
     }

@@ -21,6 +21,7 @@ class Renderer: NSObject, MTKViewDelegate {
     var pipelineState: MTLRenderPipelineState!
     var modelVertexDescriptor: MDLVertexDescriptor!
     var vertexDescriptor: MTLVertexDescriptor!
+    let depthStencilState: MTLDepthStencilState
     var projection: Projection
     static let aspectRatio: Float = 1.78
     let rootNode = Node(name: "root")
@@ -36,7 +37,10 @@ class Renderer: NSObject, MTKViewDelegate {
         self.modelVertexDescriptor = modelVertexDescriptor
         let vertexDescriptor = MTKMetalVertexDescriptorFromModelIO(modelVertexDescriptor)!
         self.vertexDescriptor = vertexDescriptor
-        self.pipelineState = Renderer.makePipelineState(device: device, vertexDescriptor: vertexDescriptor)
+        self.pipelineState = Renderer.makePipelineState(device: device,
+                                                        view: metalView,
+                                                        vertexDescriptor: vertexDescriptor)
+        self.depthStencilState = Renderer.buildDepthStencilState(device: device)
         
         super.init()
         
@@ -56,6 +60,7 @@ class Renderer: NSObject, MTKViewDelegate {
     }
     
     @objc func handleDrawMessage(_ notification: Notification) {
+        logger.debug("Handling draw message: \(String(describing: notification.object))")
         draw()
     }
     
@@ -64,7 +69,7 @@ class Renderer: NSObject, MTKViewDelegate {
     }
     
     func loadModel(vertexDescriptor: MDLVertexDescriptor) -> ModelNode? {
-        let modelURL = Bundle.main.url(forResource: "suzanne", withExtension: "obj")!
+        let modelURL = Bundle.main.url(forResource: "teapot", withExtension: "obj")!
         let bufferAllocator = MTKMeshBufferAllocator(device: device)
         let asset = MDLAsset(url: modelURL, vertexDescriptor: vertexDescriptor, bufferAllocator: bufferAllocator)
         do {
@@ -103,7 +108,14 @@ class Renderer: NSObject, MTKViewDelegate {
         return vertexDescriptor
     }
     
-    static func makePipelineState(device: MTLDevice, vertexDescriptor: MTLVertexDescriptor) -> MTLRenderPipelineState {
+    static func buildDepthStencilState(device: MTLDevice) -> MTLDepthStencilState {
+        let depthStencilDescriptor = MTLDepthStencilDescriptor()
+        depthStencilDescriptor.depthCompareFunction = .less
+        depthStencilDescriptor.isDepthWriteEnabled = true
+        return device.makeDepthStencilState(descriptor: depthStencilDescriptor)!
+    }
+    
+    static func makePipelineState(device: MTLDevice, view: MTKView, vertexDescriptor: MTLVertexDescriptor) -> MTLRenderPipelineState {
         let defaultLibrary = device.makeDefaultLibrary()!
         
         let pipelineDescriptor = MTLRenderPipelineDescriptor()
@@ -114,7 +126,8 @@ class Renderer: NSObject, MTKViewDelegate {
         let fragmentFunction = defaultLibrary.makeFunction(name: "fragment_main")
         pipelineDescriptor.vertexFunction = vertexFunction
         pipelineDescriptor.fragmentFunction = fragmentFunction
-        pipelineDescriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
+        pipelineDescriptor.colorAttachments[0].pixelFormat = view.colorPixelFormat
+        pipelineDescriptor.depthAttachmentPixelFormat = view.depthStencilPixelFormat
         
         do {
             return try device.makeRenderPipelineState(descriptor: pipelineDescriptor)
@@ -124,10 +137,12 @@ class Renderer: NSObject, MTKViewDelegate {
     }
     
     func draw() {
+        logger.debug("Custom draw() called")
         view.setNeedsDisplay(view.bounds)
     }
     
     func draw(in view: MTKView) {
+        logger.debug("Builtin draw() called")
         guard let drawable = view.currentDrawable,
               let renderPassDescriptor = view.currentRenderPassDescriptor,
               let commandBuffer = commandQueue.makeCommandBuffer(),
@@ -136,6 +151,7 @@ class Renderer: NSObject, MTKViewDelegate {
         }
         
         projection.setupProjectionMatrixBuffer(for: device)
+        renderEncoder.setDepthStencilState(depthStencilState)
         renderEncoder.setRenderPipelineState(pipelineState)
         drawNodeRecursive(self.rootNode,
                           parentTransform: matrix_identity_float4x4,
@@ -169,6 +185,8 @@ class Renderer: NSObject, MTKViewDelegate {
             node.geometry.updateVertexBuffer(for: device)
             renderEncoder.setVertexBuffer(node.geometry.vertexBuffer, offset: 0, index: 0)
             renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 3)
+        } else {
+            logger.debug("Is neither model nor custom node; must be root")
         }
         
         for childNode in node.children {

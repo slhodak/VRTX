@@ -12,7 +12,7 @@ struct ProjectionUIView: View {
             Text("Projection Matrix")
             Matrix4x4View(mat: $projection.projectionMatrix)
                 .onChange(of: projection.projectionMatrix) {
-                    NotificationCenter.default.post(name: .drawMessage, object: nil)
+                    NotificationCenter.default.post(name: .drawMessage, object: self)
                 }
             
             HStack {
@@ -50,31 +50,31 @@ struct ProjectionUIView: View {
         }
         .padding()
         .onChange(of: projection.useProjection) {
-            NotificationCenter.default.post(name: .drawMessage, object: nil)
+            NotificationCenter.default.post(name: .drawMessage, object: self)
         }
         .onChange(of: projection.usePerspectiveProjection) {
-            NotificationCenter.default.post(name: .drawMessage, object: nil)
+            NotificationCenter.default.post(name: .drawMessage, object: self)
         }
         .onChange(of: projection.perspectiveFOVYRadians) {
-            NotificationCenter.default.post(name: .drawMessage, object: nil)
+            NotificationCenter.default.post(name: .drawMessage, object: self)
         }
         .onChange(of: projection.orthographicTop) {
-            NotificationCenter.default.post(name: .drawMessage, object: nil)
+            NotificationCenter.default.post(name: .drawMessage, object: self)
         }
         .onChange(of: projection.orthographicBottom) {
-            NotificationCenter.default.post(name: .drawMessage, object: nil)
+            NotificationCenter.default.post(name: .drawMessage, object: self)
         }
         .onChange(of: projection.orthographicLeft) {
-            NotificationCenter.default.post(name: .drawMessage, object: nil)
+            NotificationCenter.default.post(name: .drawMessage, object: self)
         }
         .onChange(of: projection.orthographicRight) {
-            NotificationCenter.default.post(name: .drawMessage, object: nil)
+            NotificationCenter.default.post(name: .drawMessage, object: self)
         }
         .onChange(of: projection.projectionNear) {
-            NotificationCenter.default.post(name: .drawMessage, object: nil)
+            NotificationCenter.default.post(name: .drawMessage, object: self)
         }
         .onChange(of: projection.projectionFar) {
-            NotificationCenter.default.post(name: .drawMessage, object: nil)
+            NotificationCenter.default.post(name: .drawMessage, object: self)
         }
     }
 }

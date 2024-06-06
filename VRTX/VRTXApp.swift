@@ -15,6 +15,8 @@ struct VRTXApp: App {
         metalView.device = device
         metalView.isPaused = true
         metalView.enableSetNeedsDisplay = true
+        metalView.colorPixelFormat = .bgra8Unorm
+        metalView.depthStencilPixelFormat = .depth32Float
         renderer = Renderer(device: device, metalView: metalView)
         metalView.delegate = renderer
     }

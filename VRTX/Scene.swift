@@ -19,7 +19,7 @@ class Node: Identifiable {
     }
     
     private func updateModelMatrix() {
-        NotificationCenter.default.post(name: .drawMessage, object: nil)
+        NotificationCenter.default.post(name: .drawMessage, object: self)
     }
     
     func getModelMatrix() -> simd_float4x4 {
