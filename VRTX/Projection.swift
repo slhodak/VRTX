@@ -17,8 +17,8 @@ class Projection {
     var orthographicRight: Float = 0  { didSet { updateProjectionMatrix() } }
     var orthographicTop: Float = 0  { didSet { updateProjectionMatrix() } }
     var orthographicBottom: Float = 0  { didSet { updateProjectionMatrix() } }
-    var projectionNear: Float = 0.0  { didSet { updateProjectionMatrix() } }
-    var projectionFar: Float = -100.0  { didSet { updateProjectionMatrix() } }
+    var projectionNear: Float = 0.1  { didSet { updateProjectionMatrix() } }
+    var projectionFar: Float = 100.0  { didSet { updateProjectionMatrix() } }
     
     init(aspect: Float) {
         projectionPerspectiveAspect = aspect

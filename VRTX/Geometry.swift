@@ -13,9 +13,9 @@ struct Vertex {
 class Geometry {
     let logger = Logger(subsystem: "com.samhodak.VRTX", category: "Geometry")
     var triangleVertexPositions: simd_float3x3 = simd_float3x3(
-        [0.0, 2, -5],
-        [2, -2, -5],
-        [-2, -2, -5]
+        [0.0, 2, 0],
+        [2, -2, 0],
+        [-2, -2, 0]
     )
     var triangleVertexColors: simd_float3x3 = simd_float3x3(
         [1.0, 0.0, 0.0],

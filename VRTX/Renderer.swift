@@ -26,7 +26,7 @@ class Renderer: NSObject, MTKViewDelegate {
     static let aspectRatio: Float = 1.78
     let rootNode = Node(name: "root")
     var nodes = [Node]()
-    let viewMatrix = simd_float4x4(translationBy: SIMD3<Float>(0, 0, -2))
+    let viewMatrix = simd_float4x4(translationBy: simd_float3(0, 0, -2))
     
     init(device: MTLDevice, metalView: MTKView) {
         self.device = device
@@ -65,7 +65,7 @@ class Renderer: NSObject, MTKViewDelegate {
     }
     
     func loadModel(vertexDescriptor: MDLVertexDescriptor) -> ModelNode? {
-        let modelURL = Bundle.main.url(forResource: "teapot", withExtension: "obj")!
+        let modelURL = Bundle.main.url(forResource: "suzanne", withExtension: "obj")!
         let bufferAllocator = MTKMeshBufferAllocator(device: device)
         let asset = MDLAsset(url: modelURL, vertexDescriptor: vertexDescriptor, bufferAllocator: bufferAllocator)
         do {

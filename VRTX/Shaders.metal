@@ -35,4 +35,3 @@ fragment float4 fragment_main(VertexOut frag_in [[stage_in]]) {
     float3 normal = normalize(frag_in.worldNormal.xyz);
     return float4(abs(normal), 1);
 }
-

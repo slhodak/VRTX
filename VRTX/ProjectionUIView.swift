@@ -40,12 +40,12 @@ struct ProjectionUIView: View {
                 LabeledSlider(name: "Orthographic Right", value: $projection.orthographicRight)
                 LabeledSlider(name: "Near Z",
                               value: $projection.projectionNear,
-                              min: -4.5,
-                              max: 0)
+                              min: 0.1,
+                              max: 0.9)
                 LabeledSlider(name: "Far Z",
                               value: $projection.projectionFar,
-                              min: -100,
-                              max: -5)
+                              min: 1,
+                              max: 101)
             }
         }
         .padding()
