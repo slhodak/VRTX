@@ -4,23 +4,27 @@ import simd
 
 @Observable
 class Projection {
-    var projectionMatrix = matrix_identity_float4x4
-    var projectionPerspectiveAspect: Float
-    var usePerspectiveProjection: Bool = true
-    var useProjection: Bool = true
-    var perspectiveFOVYRadians: Float = Float.pi * 0.25
-    var orthographicLeft: Float = 0
-    var orthographicRight: Float = 0
-    var orthographicTop: Float = 0
-    var orthographicBottom: Float = 0
-    var projectionNear: Float = 0.0
-    var projectionFar: Float = -100.0
+    var projectionMatrix = matrix_identity_float4x4 {
+        didSet {
+            NotificationCenter.default.post(name: .drawMessage, object: self)
+        }
+    }
+    var projectionPerspectiveAspect: Float { didSet { updateProjectionMatrix() } }
+    var usePerspectiveProjection: Bool = true  { didSet { updateProjectionMatrix() } }
+    var useProjection: Bool = true  { didSet { updateProjectionMatrix() } }
+    var perspectiveFOVYRadians: Float = Float.pi * 0.25  { didSet { updateProjectionMatrix() } }
+    var orthographicLeft: Float = 0  { didSet { updateProjectionMatrix() } }
+    var orthographicRight: Float = 0  { didSet { updateProjectionMatrix() } }
+    var orthographicTop: Float = 0  { didSet { updateProjectionMatrix() } }
+    var orthographicBottom: Float = 0  { didSet { updateProjectionMatrix() } }
+    var projectionNear: Float = 0.0  { didSet { updateProjectionMatrix() } }
+    var projectionFar: Float = -100.0  { didSet { updateProjectionMatrix() } }
     
     init(aspect: Float) {
         projectionPerspectiveAspect = aspect
     }
     
-    func updateProjectionMatrix(for device: MTLDevice) {
+    func updateProjectionMatrix() {
         if useProjection {
             if usePerspectiveProjection {
                 projectionMatrix = simd_float4x4(perspectiveProjectionFov: perspectiveFOVYRadians,

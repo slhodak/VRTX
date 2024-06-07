@@ -48,6 +48,7 @@ class Renderer: NSObject, MTKViewDelegate {
         self.rootNode.children.append(modelNode)
         let customNode = loadCustomGeometry()
         self.rootNode.children.append(customNode)
+        projection.updateProjectionMatrix()
         
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(handleDrawMessage(_:)),
@@ -155,7 +156,6 @@ class Renderer: NSObject, MTKViewDelegate {
     
     func drawNodeRecursive(_ node: Node, parentTransform: simd_float4x4, renderEncoder: MTLRenderCommandEncoder) {
         let modelMatrix = parentTransform * node.getModelMatrix()
-        projection.updateProjectionMatrix(for: device)
         let viewProjectionMatrix = projection.projectionMatrix * viewMatrix
         var uniforms = Uniforms(viewProjectionMatrix: viewProjectionMatrix,
                                 modelMatrix: modelMatrix,
@@ -178,8 +178,6 @@ class Renderer: NSObject, MTKViewDelegate {
             node.geometry.updateVertexBuffer(for: device)
             renderEncoder.setVertexBuffer(node.geometry.vertexBuffer, offset: 0, index: 0)
             renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 3)
-        } else {
-            logger.debug("Is neither model nor custom node; must be root")
         }
         
         for childNode in node.children {

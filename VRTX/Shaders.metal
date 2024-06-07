@@ -17,7 +17,7 @@ struct VertexOut {
     float4 position [[position]];
     float3 worldNormal;
     float3 worldPosition;
-    float4 color;
+    float2 texCoords;
 };
 
 vertex VertexOut vertex_main(VertexIn v_in [[stage_in]],
@@ -27,6 +27,7 @@ vertex VertexOut vertex_main(VertexIn v_in [[stage_in]],
     v_out.position = uniforms.viewProjectionMatrix * worldPosition;
     v_out.worldPosition = worldPosition.xyz;
     v_out.worldNormal = uniforms.normalMatrix * v_in.normal;
+    v_out.texCoords = v_in.texCoords;
     return v_out;
 }
 
