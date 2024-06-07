@@ -10,6 +10,13 @@ extension simd_float4x4 {
         """
     }
     
+    init(scale3D s: SIMD3<Float>) {
+        self.init(simd_float4(s.x, 0, 0, 0),
+                  simd_float4(0, s.y, 0, 0),
+                  simd_float4(0, 0, s.z, 0),
+                  simd_float4(0, 0, 0, 1))
+    }
+    
     init(scaleBy s: Float) {
         self.init(simd_float4(s, 0, 0, 0),
                   simd_float4(0, s, 0, 0),

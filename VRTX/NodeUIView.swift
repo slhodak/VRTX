@@ -8,7 +8,9 @@ struct NodeUIView: View {
     var body: some View {
         VStack(alignment: .leading) {
             Text(node.name)
-            LabeledSlider(name: "Scale", value: $node.scale, min: 0, max: 10)
+            LabeledSlider(name: "ScaleX", value: $node.scale.x, min: 0, max: 10)
+            LabeledSlider(name: "ScaleY", value: $node.scale.y, min: 0, max: 10)
+            LabeledSlider(name: "ScaleZ", value: $node.scale.z, min: 0, max: 10)
             LabeledSlider(name: "TranslateX", value: $node.translation.x, min: -10, max: 10)
             LabeledSlider(name: "TranslateY", value: $node.translation.y, min: -10, max: 10)
             LabeledSlider(name: "TranslateZ", value: $node.translation.z, min: -10, max: 10)
