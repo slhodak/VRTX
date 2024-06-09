@@ -7,8 +7,8 @@ struct ContentView: View {
     
     var body: some View {
         HStack(spacing: 0) {
-            VStack {
-                InputsView(renderer: renderer)
+            ScrollView {
+                NodesView(renderer: renderer)
             }
                 .frame(width: 400)
             
@@ -20,10 +20,8 @@ struct ContentView: View {
             }
                 .frame(width: 500)
             
-            VStack {
-                Spacer()
-                Text("Right Column")
-                Spacer()
+            ScrollView {
+                ProjectionUIView(renderer: renderer, projection: renderer.projection)
             }
                 .frame(width: 400)
             

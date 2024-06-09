@@ -18,7 +18,6 @@
 		17E962CD2BF6D87F00F0A227 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 17E962CC2BF6D87F00F0A227 /* Assets.xcassets */; };
 		17E962DD2BF6E43300F0A227 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 17E962DC2BF6E43300F0A227 /* Shaders.metal */; };
 		17E962DF2BF7BF5800F0A227 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17E962DE2BF7BF5800F0A227 /* Renderer.swift */; };
-		17E962E12BF7BFA500F0A227 /* InputsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17E962E02BF7BFA500F0A227 /* InputsView.swift */; };
 		17E962E42BF7D0DD00F0A227 /* Float.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17E962E32BF7D0DD00F0A227 /* Float.swift */; };
 		17ED9E5D2BFA6CAC00268A2A /* Projection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17ED9E5C2BFA6CAC00268A2A /* Projection.swift */; };
 		17ED9E5F2BFA6CB900268A2A /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17ED9E5E2BFA6CB900268A2A /* Geometry.swift */; };
@@ -44,7 +43,6 @@
 		17E962DA2BF6E23000F0A227 /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
 		17E962DC2BF6E43300F0A227 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		17E962DE2BF7BF5800F0A227 /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
-		17E962E02BF7BFA500F0A227 /* InputsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputsView.swift; sourceTree = "<group>"; };
 		17E962E32BF7D0DD00F0A227 /* Float.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Float.swift; sourceTree = "<group>"; };
 		17ED9E5C2BFA6CAC00268A2A /* Projection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Projection.swift; sourceTree = "<group>"; };
 		17ED9E5E2BFA6CB900268A2A /* Geometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
@@ -111,7 +109,6 @@
 				17ED9E5E2BFA6CB900268A2A /* Geometry.swift */,
 				1755526A2C0E0CE400DF7A15 /* Scene.swift */,
 				174AA7192BF9A384002B03A4 /* MetalView.swift */,
-				17E962E02BF7BFA500F0A227 /* InputsView.swift */,
 				17ED9E622BFA6D3900268A2A /* ProjectionUIView.swift */,
 				17ED9E602BFA6D2D00268A2A /* NodeUIView.swift */,
 				17ED9E662BFAAA5400268A2A /* LabeledSlider.swift */,
@@ -218,7 +215,6 @@
 				178CD62A2C0E8EAF0070C636 /* ContentView.swift in Sources */,
 				17ED9E632BFA6D3900268A2A /* ProjectionUIView.swift in Sources */,
 				174AA71A2BF9A384002B03A4 /* MetalView.swift in Sources */,
-				17E962E12BF7BFA500F0A227 /* InputsView.swift in Sources */,
 				1755526B2C0E0CE400DF7A15 /* Scene.swift in Sources */,
 				17ED9E672BFAAA5400268A2A /* LabeledSlider.swift in Sources */,
 				17E962E42BF7D0DD00F0A227 /* Float.swift in Sources */,
