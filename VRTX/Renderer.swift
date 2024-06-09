@@ -26,7 +26,6 @@ class Renderer: NSObject, MTKViewDelegate {
     static let aspectRatio: Float = 1.78
     let rootNode = Node(name: "root")
     var nodes = [Node]()
-    let viewMatrix = simd_float4x4(translationBy: simd_float3(0, 0, -2))
     
     init(device: MTLDevice, metalView: MTKView) {
         self.device = device
@@ -156,7 +155,7 @@ class Renderer: NSObject, MTKViewDelegate {
     
     func drawNodeRecursive(_ node: Node, parentTransform: simd_float4x4, renderEncoder: MTLRenderCommandEncoder) {
         let modelMatrix = parentTransform * node.getModelMatrix()
-        let viewProjectionMatrix = projection.projectionMatrix * viewMatrix
+        let viewProjectionMatrix = projection.viewProjectionMatrix
         var uniforms = Uniforms(viewProjectionMatrix: viewProjectionMatrix,
                                 modelMatrix: modelMatrix,
                                 normalMatrix: modelMatrix.normalMatrix)

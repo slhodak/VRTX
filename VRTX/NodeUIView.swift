@@ -16,6 +16,11 @@ struct NodeUIView: View {
             LabeledSlider(name: "TranslateZ", value: $node.translation.z, min: -10, max: 10)
             VectorView(vector: $node.rotationAxis)
             LabeledSlider(name: "RotationAngle", value: $node.rotationAngle, min: 0, max: 2)
+            
+            Text("Model Matrix")
+            Matrix4x4View(mat: $node.modelMatrix)
+            Text("Normal Matrix")
+            Matrix3x3View(mat: $node.normalMatrix)
         }
     }
 }
@@ -32,7 +37,6 @@ struct CustomNodeUIView: View {
         .onChange(of: geometry.triangleVertexPositions) {
             NotificationCenter.default.post(name: .drawMessage, object: self)
         }
-        .padding()
     }
 }
 

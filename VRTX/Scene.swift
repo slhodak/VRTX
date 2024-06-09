@@ -9,6 +9,7 @@ class Node: Identifiable {
     weak var parent: Node?
     var children = [Node]()
     var modelMatrix = matrix_identity_float4x4
+    var normalMatrix = matrix_identity_float3x3
     var scale = simd_float3(1, 1, 1) { didSet { updateModelMatrix() } }
     var translation = simd_float3(0, 0, 0) { didSet { updateModelMatrix() } }
     var rotationAxis = simd_float3(0, 1, 0) { didSet { updateModelMatrix() } }
@@ -19,6 +20,7 @@ class Node: Identifiable {
     }
     
     private func updateModelMatrix() {
+        self.normalMatrix = modelMatrix.normalMatrix
         NotificationCenter.default.post(name: .drawMessage, object: self)
     }
     

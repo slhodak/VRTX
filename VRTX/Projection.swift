@@ -4,7 +4,9 @@ import simd
 
 @Observable
 class Projection {
-    var projectionMatrix = matrix_identity_float4x4 {
+    var viewMatrix = matrix_identity_float4x4 { didSet { handleViewMatrixUpdate() } }
+    var projectionMatrix = matrix_identity_float4x4
+    var viewProjectionMatrix = matrix_identity_float4x4 {
         didSet {
             NotificationCenter.default.post(name: .drawMessage, object: self)
         }
@@ -22,6 +24,11 @@ class Projection {
     
     init(aspect: Float) {
         projectionPerspectiveAspect = aspect
+        viewMatrix = simd_float4x4(translationBy: simd_float3(0, 0, -2))
+    }
+    
+    func handleViewMatrixUpdate() {
+        viewProjectionMatrix = viewMatrix * projectionMatrix
     }
     
     func updateProjectionMatrix() {
@@ -42,5 +49,7 @@ class Projection {
         } else {
             projectionMatrix = matrix_identity_float4x4
         }
+        
+        viewProjectionMatrix = projectionMatrix * viewMatrix
     }
 }
