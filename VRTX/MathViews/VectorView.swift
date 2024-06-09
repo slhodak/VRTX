@@ -10,10 +10,12 @@ import SwiftUI
 import simd
 
 struct VectorView: View {
+    let name: String
     @Binding var vector: simd_float3
     
     var body: some View {
         HStack {
+            Text(name)
             TextField("x", value: $vector[0], format: .number).frame(width: 45)
             TextField("y", value: $vector[1], format: .number).frame(width: 45)
             TextField("z", value: $vector[2], format: .number).frame(width: 45)

@@ -15,9 +15,6 @@ struct ProjectionUIView: View {
             
             Text("Projection Matrix")
             Matrix4x4View(mat: $projection.projectionMatrix)
-                .onChange(of: projection.projectionMatrix) {
-                    NotificationCenter.default.post(name: .drawMessage, object: self)
-                }
             
             Text("View Projection Matrix")
             Matrix4x4View(mat: $projection.viewProjectionMatrix)

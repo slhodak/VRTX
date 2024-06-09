@@ -154,9 +154,8 @@ class Renderer: NSObject, MTKViewDelegate {
     }
     
     func drawNodeRecursive(_ node: Node, parentTransform: simd_float4x4, renderEncoder: MTLRenderCommandEncoder) {
-        let modelMatrix = parentTransform * node.getModelMatrix()
-        let viewProjectionMatrix = projection.viewProjectionMatrix
-        var uniforms = Uniforms(viewProjectionMatrix: viewProjectionMatrix,
+        let modelMatrix = parentTransform * node.currentModelMatrix
+        var uniforms = Uniforms(viewProjectionMatrix: projection.viewProjectionMatrix,
                                 modelMatrix: modelMatrix,
                                 normalMatrix: modelMatrix.normalMatrix)
         renderEncoder.setVertexBytes(&uniforms, length: MemoryLayout<Uniforms>.size, index: 1)

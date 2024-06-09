@@ -14,13 +14,11 @@ struct NodeUIView: View {
             LabeledSlider(name: "TranslateX", value: $node.translation.x, min: -10, max: 10)
             LabeledSlider(name: "TranslateY", value: $node.translation.y, min: -10, max: 10)
             LabeledSlider(name: "TranslateZ", value: $node.translation.z, min: -10, max: 10)
-            VectorView(vector: $node.rotationAxis)
+            VectorView(name: "Rotation Axis", vector: $node.rotationAxis)
             LabeledSlider(name: "RotationAngle", value: $node.rotationAngle, min: 0, max: 2)
             
             Text("Model Matrix")
-            Matrix4x4View(mat: $node.modelMatrix)
-            Text("Normal Matrix")
-            Matrix3x3View(mat: $node.normalMatrix)
+            Matrix4x4View(mat: $node.currentModelMatrix)
         }
     }
 }

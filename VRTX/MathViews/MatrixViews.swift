@@ -8,6 +8,9 @@ struct Matrix4x4View: View {
         VStack {
             HStack {
                 TextField("m00", value: $mat[0][0], format: .number).frame(width: 45)
+                    .onChange(of: mat[0][0]) {
+                        print("change event in m00")
+                    }
                 TextField("m01", value: $mat[0][1], format: .number).frame(width: 45)
                 TextField("m02", value: $mat[0][2], format: .number).frame(width: 45)
                 TextField("m03", value: $mat[0][3], format: .number).frame(width: 45)

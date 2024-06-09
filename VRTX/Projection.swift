@@ -28,7 +28,7 @@ class Projection {
     }
     
     func handleViewMatrixUpdate() {
-        viewProjectionMatrix = viewMatrix * projectionMatrix
+        viewProjectionMatrix = projectionMatrix * viewMatrix
     }
     
     func updateProjectionMatrix() {
