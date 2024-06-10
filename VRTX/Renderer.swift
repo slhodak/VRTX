@@ -18,9 +18,9 @@ class Renderer: NSObject, MTKViewDelegate {
     var view: MTKView
     var device: MTLDevice
     var commandQueue: MTLCommandQueue
-    var pipelineState: MTLRenderPipelineState!
-    var modelVertexDescriptor: MDLVertexDescriptor!
-    var vertexDescriptor: MTLVertexDescriptor!
+    var pipelineState: MTLRenderPipelineState
+    var modelVertexDescriptor: MDLVertexDescriptor
+    var vertexDescriptor: MTLVertexDescriptor
     let depthStencilState: MTLDepthStencilState
     var projection: Projection
     static let aspectRatio: Float = 1.78
