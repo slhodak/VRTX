@@ -34,7 +34,7 @@ class Renderer: NSObject, MTKViewDelegate {
     let depthStencilState: MTLDepthStencilState
     var projection: Projection
     static let aspectRatio: Float = 1.78
-    let scene = Scene()
+    let scene: VScene
     let rootNode = Node(name: "root")
     var nodes = [Node]()
     var cameraWorldPosition = simd_float3(0, 0, 2)
@@ -50,6 +50,7 @@ class Renderer: NSObject, MTKViewDelegate {
         self.modelVertexDescriptor = modelVertexDescriptor
         let vertexDescriptor = MTKMetalVertexDescriptorFromModelIO(modelVertexDescriptor)!
         self.vertexDescriptor = vertexDescriptor
+        self.scene = Renderer.buildScene()
         self.pipelineState = Renderer.makePipelineState(device: device,
                                                         view: metalView,
                                                         vertexDescriptor: vertexDescriptor)
@@ -77,6 +78,16 @@ class Renderer: NSObject, MTKViewDelegate {
     
     @objc func handleDrawMessage(_ notification: Notification) {
         draw()
+    }
+    
+    static func buildScene() -> VScene {
+        let scene = VScene()
+        scene.ambientLightColor = simd_float3(0.1, 0.1, 0.1)
+        let light0 = Light(worldPosition: simd_float3(5, 5, 0), color: simd_float3(1, 1, 1))
+        let light1 = Light(worldPosition: simd_float3(0, 5, 0), color: simd_float3(1, 1, 1))
+        let light2 = Light(worldPosition: simd_float3(-5, 5, 0), color: simd_float3(1, 1, 1))
+        scene.lights = [light0, light1, light2]
+        return scene
     }
     
     func loadModel(vertexDescriptor: MDLVertexDescriptor) -> ModelNode? {

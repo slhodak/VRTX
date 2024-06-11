@@ -62,7 +62,7 @@ class ModelNode: Node {
     }
 }
 
-class Scene {
+class VScene {
     var rootNode = Node(name: "Root")
     var ambientLightColor = simd_float3(0, 0, 0)
     var lights = [Light]()
