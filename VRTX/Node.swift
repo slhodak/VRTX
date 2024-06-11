@@ -2,6 +2,17 @@ import Foundation
 import MetalKit
 import simd
 
+struct Light {
+    var worldPosition = simd_float3(0, 0, 0)
+    var color = simd_float3(1, 1, 1)
+}
+
+struct Material {
+    var specularColor = simd_float3(1, 1, 1)
+    var specularPower: Float = 1
+    var baseColorTexture: MTLTexture?
+}
+
 @Observable
 class Node: Identifiable {
     let id = UUID()
@@ -14,6 +25,7 @@ class Node: Identifiable {
     var translation = simd_float3(0, 0, 0) { didSet { updateModelMatrix() } }
     var rotationAxis = simd_float3(0, 1, 0) { didSet { updateModelMatrix() } }
     var rotationAngle: Float = 0 { didSet { updateModelMatrix() } }
+    var material = Material()
     
     init(name: String) {
         self.name = name
@@ -48,4 +60,10 @@ class ModelNode: Node {
         self.mesh = mesh
         super.init(name: name)
     }
+}
+
+class Scene {
+    var rootNode = Node(name: "Root")
+    var ambientLightColor = simd_float3(0, 0, 0)
+    var lights = [Light]()
 }
