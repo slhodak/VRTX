@@ -5,7 +5,7 @@ constant float3 ambientIntensity = 0.3;
 constant float3 lightPosition(2, 2, 2);
 constant float3 lightColor(1, 1, 1);
 constant float3 worldCameraPosition(0, 0, 2);
-constant float3 baseColor(1.0, 0, 0);
+//constant float3 baseColor(1.0, 0, 0);
 constant float specularPower = 200;
 
 struct Uniforms {
@@ -34,11 +34,14 @@ vertex VertexOut vertex_main(VertexIn v_in [[stage_in]],
     v_out.position = uniforms.viewProjectionMatrix * worldPosition;
     v_out.worldPosition = worldPosition.xyz;
     v_out.worldNormal = uniforms.normalMatrix * v_in.normal;
-    v_out.texCoords = v_in.texCoords;
+    v_out.texCoords = v_in.texCoords * float2(3, 3);
     return v_out;
 }
 
-fragment float4 fragment_main(VertexOut frag_in [[stage_in]]) {
+fragment float4 fragment_main(VertexOut frag_in [[stage_in]],
+                              texture2d<float, access::sample> baseColorTexture [[texture(0)]],
+                              sampler baseColorSampler [[sampler(0)]]) {
+    float3 baseColor = baseColorTexture.sample(baseColorSampler, frag_in.texCoords).rgb;
     float3 N = normalize(frag_in.worldNormal);
     float3 L = normalize(lightPosition - frag_in.worldPosition);
     float3 diffuseIntensity = saturate(dot(N, L));

@@ -26,6 +26,8 @@ class Renderer: NSObject, MTKViewDelegate {
     static let aspectRatio: Float = 1.78
     let rootNode = Node(name: "root")
     var nodes = [Node]()
+    var baseColorTexture: MTLTexture?
+    let samplerState: MTLSamplerState
     
     init(device: MTLDevice, metalView: MTKView) {
         self.device = device
@@ -40,9 +42,11 @@ class Renderer: NSObject, MTKViewDelegate {
                                                         view: metalView,
                                                         vertexDescriptor: vertexDescriptor)
         self.depthStencilState = Renderer.buildDepthStencilState(device: device)
+        self.samplerState = Renderer.buildSamplerState(device: device)
         
         super.init()
         
+        loadTexture()
         let modelNode = loadModel(vertexDescriptor: self.modelVertexDescriptor)!
         self.rootNode.children.append(modelNode)
         let customNode = loadCustomGeometry()
@@ -84,6 +88,12 @@ class Renderer: NSObject, MTKViewDelegate {
         return CustomNode(name: "custom", geometry: geometry)
     }
     
+    func loadTexture() {
+        let textureLoader = MTKTextureLoader(device: device)
+        let options: [MTKTextureLoader.Option: Any] = [.generateMipmaps: true, .SRGB: true]
+        baseColorTexture = try? textureLoader.newTexture(name: "neon_purple_grid", scaleFactor: 1, bundle: nil, options: options)
+    }
+    
     static func getModelVertexDescriptor() -> MDLVertexDescriptor {
         let vertexDescriptor = MDLVertexDescriptor()
         vertexDescriptor.attributes[0] = MDLVertexAttribute(name: MDLVertexAttributePosition,
@@ -108,6 +118,18 @@ class Renderer: NSObject, MTKViewDelegate {
         depthStencilDescriptor.depthCompareFunction = .less
         depthStencilDescriptor.isDepthWriteEnabled = true
         return device.makeDepthStencilState(descriptor: depthStencilDescriptor)!
+    }
+    
+    static func buildSamplerState(device: MTLDevice) -> MTLSamplerState {
+        let samplerDescriptor = MTLSamplerDescriptor()
+        samplerDescriptor.normalizedCoordinates = true
+        samplerDescriptor.minFilter = .linear
+        samplerDescriptor.magFilter = .linear
+        samplerDescriptor.mipFilter = .linear
+        samplerDescriptor.rAddressMode = .repeat
+        samplerDescriptor.sAddressMode = .repeat
+        samplerDescriptor.tAddressMode = .repeat
+        return device.makeSamplerState(descriptor: samplerDescriptor)!
     }
     
     static func makePipelineState(device: MTLDevice, view: MTKView, vertexDescriptor: MTLVertexDescriptor) -> MTLRenderPipelineState {
@@ -143,6 +165,8 @@ class Renderer: NSObject, MTKViewDelegate {
             return
         }
         
+        renderEncoder.setFragmentTexture(baseColorTexture, index: 0)
+        renderEncoder.setFragmentSamplerState(samplerState, index: 0)
         renderEncoder.setDepthStencilState(depthStencilState)
         renderEncoder.setRenderPipelineState(pipelineState)
         drawNodeRecursive(self.rootNode,
