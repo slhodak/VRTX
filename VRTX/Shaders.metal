@@ -2,6 +2,8 @@
 using namespace metal;
 
 constant float3 ambientIntensity = 0.3;
+constant float3 lightPosition(2, 2, 2);
+constant float3 lightColor(1, 1, 1);
 constant float3 baseColor(1.0, 0, 0);
 
 struct Uniforms {
@@ -35,8 +37,9 @@ vertex VertexOut vertex_main(VertexIn v_in [[stage_in]],
 }
 
 fragment float4 fragment_main(VertexOut frag_in [[stage_in]]) {
-    //float3 normal = normalize(frag_in.worldNormal.xyz);
-    //return float4(abs(normal), 1);
-    float3 finalColor = ambientIntensity * baseColor;
+    float3 N = normalize(frag_in.worldNormal.xyz);
+    float3 L = normalize(lightPosition - frag_in.worldPosition.xyz);
+    float3 diffuseIntensity = saturate(dot(N, L));
+    float3 finalColor = saturate(ambientIntensity + diffuseIntensity) * lightColor * baseColor;
     return float4(finalColor, 1);
 }
