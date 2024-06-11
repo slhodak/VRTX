@@ -188,8 +188,6 @@ class Renderer: NSObject, MTKViewDelegate {
             return
         }
         
-        projection.viewMatrix = simd_float4x4(translationBy: -cameraWorldPosition)
-        
         renderEncoder.setFragmentTexture(baseColorTexture, index: 0)
         renderEncoder.setFragmentSamplerState(samplerState, index: 0)
         renderEncoder.setDepthStencilState(depthStencilState)
@@ -209,7 +207,7 @@ class Renderer: NSObject, MTKViewDelegate {
                                             normalMatrix: modelMatrix.normalMatrix)
         renderEncoder.setVertexBytes(&vertexUniforms, length: MemoryLayout<VertexUniforms>.size, index: 1)
         
-        var fragmentUniforms = FragmentUniforms(cameraWorldPosition: cameraWorldPosition,
+        var fragmentUniforms = FragmentUniforms(cameraWorldPosition: projection.viewMatrix.toXYZ(),
                                                 ambientLightColor: scene.ambientLightColor,
                                                 specularColor: node.material.specularColor,
                                                 specularPower: node.material.specularPower,

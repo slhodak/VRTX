@@ -1,11 +1,7 @@
 #include <metal_stdlib>
 using namespace metal;
 
-constant float3 ambientIntensity = 0.3;
-constant float3 lightPosition(2, 2, 2);
-constant float3 lightColor(1, 1, 1);
 constant float3 worldCameraPosition(0, 0, 2);
-constant float specularPower = 200;
 
 struct Light {
     float3 worldPosition;
@@ -68,6 +64,7 @@ fragment float4 fragment_main(VertexOut frag_in [[stage_in]],
         float3 H = normalize(L + V);
         float specularBase = saturate(dot(N, H));
         float specularIntensity = powr(specularBase, uniforms.specularPower);
+        float3 lightColor = uniforms.lights[i].color;
         finalColor += uniforms.ambientLightColor * baseColor +
                       diffuseIntensity * lightColor * baseColor +
                       specularIntensity * lightColor * specularColor;
