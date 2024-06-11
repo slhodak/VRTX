@@ -5,7 +5,6 @@ constant float3 ambientIntensity = 0.3;
 constant float3 lightPosition(2, 2, 2);
 constant float3 lightColor(1, 1, 1);
 constant float3 worldCameraPosition(0, 0, 2);
-//constant float3 baseColor(1.0, 0, 0);
 constant float specularPower = 200;
 
 struct Uniforms {
