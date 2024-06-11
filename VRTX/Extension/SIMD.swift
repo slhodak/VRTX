@@ -90,4 +90,8 @@ extension simd_float4x4 {
         
         return upperLeft.transpose.inverse
     }
+    
+    func toXYZ() -> simd_float3 {
+        return simd_float3(self.columns.0.x, self.columns.1.y, self.columns.2.z)
+    }
 }
