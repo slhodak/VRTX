@@ -1,6 +1,9 @@
 #include <metal_stdlib>
 using namespace metal;
 
+constant float3 ambientIntensity = 0.3;
+constant float3 baseColor(1.0, 0, 0);
+
 struct Uniforms {
     float4x4 viewProjectionMatrix;
     float4x4 modelMatrix;
@@ -32,6 +35,8 @@ vertex VertexOut vertex_main(VertexIn v_in [[stage_in]],
 }
 
 fragment float4 fragment_main(VertexOut frag_in [[stage_in]]) {
-    float3 normal = normalize(frag_in.worldNormal.xyz);
-    return float4(abs(normal), 1);
+    //float3 normal = normalize(frag_in.worldNormal.xyz);
+    //return float4(abs(normal), 1);
+    float3 finalColor = ambientIntensity * baseColor;
+    return float4(finalColor, 1);
 }
