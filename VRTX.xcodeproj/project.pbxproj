@@ -12,6 +12,8 @@
 		1755526B2C0E0CE400DF7A15 /* Node.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1755526A2C0E0CE400DF7A15 /* Node.swift */; };
 		1755526E2C0E14D600DF7A15 /* VectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1755526D2C0E14D600DF7A15 /* VectorView.swift */; };
 		178CD62A2C0E8EAF0070C636 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 178CD6292C0E8EAF0070C636 /* ContentView.swift */; };
+		1791FFF02C18A9A800317E8E /* MaterialUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1791FFEF2C18A9A800317E8E /* MaterialUIView.swift */; };
+		1791FFF62C18AA2A00317E8E /* Material.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1791FFF52C18AA2A00317E8E /* Material.swift */; };
 		179B2FB12BFFC06000F02A3A /* MatrixViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 179B2FB02BFFC06000F02A3A /* MatrixViews.swift */; };
 		17C6A6DD2C11F8AF00652242 /* teapot.obj in Resources */ = {isa = PBXBuildFile; fileRef = 17C6A6DC2C11F8AF00652242 /* teapot.obj */; };
 		17D46BA32C0B8D6800B14973 /* suzanne.obj in Resources */ = {isa = PBXBuildFile; fileRef = 17D46BA22C0B8D6800B14973 /* suzanne.obj */; };
@@ -33,6 +35,8 @@
 		1755526A2C0E0CE400DF7A15 /* Node.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Node.swift; sourceTree = "<group>"; };
 		1755526D2C0E14D600DF7A15 /* VectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VectorView.swift; sourceTree = "<group>"; };
 		178CD6292C0E8EAF0070C636 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		1791FFEF2C18A9A800317E8E /* MaterialUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaterialUIView.swift; sourceTree = "<group>"; };
+		1791FFF52C18AA2A00317E8E /* Material.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Material.swift; sourceTree = "<group>"; };
 		179B2FB02BFFC06000F02A3A /* MatrixViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatrixViews.swift; sourceTree = "<group>"; };
 		17C6A6DC2C11F8AF00652242 /* teapot.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = teapot.obj; sourceTree = "<group>"; };
 		17D46BA22C0B8D6800B14973 /* suzanne.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = suzanne.obj; sourceTree = "<group>"; };
@@ -63,13 +67,41 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		179B2FAF2BFFC05300F02A3A /* MathViews */ = {
+		1791FFF12C18A9B900317E8E /* Node */ = {
+			isa = PBXGroup;
+			children = (
+				1755526A2C0E0CE400DF7A15 /* Node.swift */,
+				17ED9E602BFA6D2D00268A2A /* NodeUIView.swift */,
+			);
+			path = Node;
+			sourceTree = "<group>";
+		};
+		1791FFF22C18A9CA00317E8E /* Material */ = {
+			isa = PBXGroup;
+			children = (
+				1791FFF52C18AA2A00317E8E /* Material.swift */,
+				1791FFEF2C18A9A800317E8E /* MaterialUIView.swift */,
+			);
+			path = Material;
+			sourceTree = "<group>";
+		};
+		1791FFF32C18A9D700317E8E /* Projection */ = {
+			isa = PBXGroup;
+			children = (
+				17ED9E5C2BFA6CAC00268A2A /* Projection.swift */,
+				17ED9E622BFA6D3900268A2A /* ProjectionUIView.swift */,
+			);
+			path = Projection;
+			sourceTree = "<group>";
+		};
+		1791FFF42C18A9F900317E8E /* UIUtilities */ = {
 			isa = PBXGroup;
 			children = (
 				179B2FB02BFFC06000F02A3A /* MatrixViews.swift */,
 				1755526D2C0E14D600DF7A15 /* VectorView.swift */,
+				17ED9E662BFAAA5400268A2A /* LabeledSlider.swift */,
 			);
-			path = MathViews;
+			path = UIUtilities;
 			sourceTree = "<group>";
 		};
 		17D46BA42C0B8D6B00B14973 /* Models */ = {
@@ -105,15 +137,13 @@
 				174AA7172BF99B7E002B03A4 /* VRTXApp.swift */,
 				178CD6292C0E8EAF0070C636 /* ContentView.swift */,
 				17E962DE2BF7BF5800F0A227 /* Renderer.swift */,
-				17ED9E5C2BFA6CAC00268A2A /* Projection.swift */,
 				17ED9E5E2BFA6CB900268A2A /* Geometry.swift */,
-				1755526A2C0E0CE400DF7A15 /* Node.swift */,
 				174AA7192BF9A384002B03A4 /* MetalView.swift */,
-				17ED9E622BFA6D3900268A2A /* ProjectionUIView.swift */,
-				17ED9E602BFA6D2D00268A2A /* NodeUIView.swift */,
-				17ED9E662BFAAA5400268A2A /* LabeledSlider.swift */,
 				17E962DC2BF6E43300F0A227 /* Shaders.metal */,
-				179B2FAF2BFFC05300F02A3A /* MathViews */,
+				1791FFF32C18A9D700317E8E /* Projection */,
+				1791FFF12C18A9B900317E8E /* Node */,
+				1791FFF22C18A9CA00317E8E /* Material */,
+				1791FFF42C18A9F900317E8E /* UIUtilities */,
 				17E962E22BF7D0D100F0A227 /* Extension */,
 				17E962CC2BF6D87F00F0A227 /* Assets.xcassets */,
 				17E962D12BF6D87F00F0A227 /* VRTX.entitlements */,
@@ -217,8 +247,10 @@
 				174AA71A2BF9A384002B03A4 /* MetalView.swift in Sources */,
 				1755526B2C0E0CE400DF7A15 /* Node.swift in Sources */,
 				17ED9E672BFAAA5400268A2A /* LabeledSlider.swift in Sources */,
+				1791FFF02C18A9A800317E8E /* MaterialUIView.swift in Sources */,
 				17E962E42BF7D0DD00F0A227 /* Float.swift in Sources */,
 				179B2FB12BFFC06000F02A3A /* MatrixViews.swift in Sources */,
+				1791FFF62C18AA2A00317E8E /* Material.swift in Sources */,
 				17ED9E652BFAA52300268A2A /* SIMD.swift in Sources */,
 				17ED9E5F2BFA6CB900268A2A /* Geometry.swift in Sources */,
 				17ED9E612BFA6D2D00268A2A /* NodeUIView.swift in Sources */,

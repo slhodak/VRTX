@@ -7,12 +7,6 @@ struct Light {
     var color = simd_float3(1, 1, 1)
 }
 
-struct Material {
-    var specularColor = simd_float3(1, 1, 1)
-    var specularPower: Float = 1
-    var baseColorTexture: MTLTexture?
-}
-
 @Observable
 class Node: Identifiable {
     let id = UUID()
