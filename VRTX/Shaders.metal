@@ -42,6 +42,10 @@ fragment float4 fragment_main(VertexOut frag_in [[stage_in]]) {
     float3 N = normalize(frag_in.worldNormal);
     float3 L = normalize(lightPosition - frag_in.worldPosition);
     float3 diffuseIntensity = saturate(dot(N, L));
-    float3 finalColor = saturate(ambientIntensity + diffuseIntensity) * lightColor * baseColor;
+    float3 V = normalize(worldCameraPosition - frag_in.worldPosition);
+    float3 H = normalize(L + V);
+    float specularBase = saturate(dot(N, H));
+    float specularIntensity = powr(specularBase, specularPower);
+    float3 finalColor = saturate(ambientIntensity + diffuseIntensity) * baseColor * lightColor + specularIntensity * lightColor;
     return float4(finalColor, 1);
 }
