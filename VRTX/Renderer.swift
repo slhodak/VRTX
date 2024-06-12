@@ -32,14 +32,15 @@ class Renderer: NSObject, MTKViewDelegate {
     var modelVertexDescriptor: MDLVertexDescriptor
     var vertexDescriptor: MTLVertexDescriptor
     let depthStencilState: MTLDepthStencilState
+    var baseColorTexture: MTLTexture?
+    let samplerState: MTLSamplerState
     var projection: Projection
+    
+    var cameraWorldPosition = simd_float3(0, 0, 2)
     static let aspectRatio: Float = 1.78
     let scene: VScene
     let rootNode = Node(name: "root")
     var nodes = [Node]()
-    var cameraWorldPosition = simd_float3(0, 0, 2)
-    var baseColorTexture: MTLTexture?
-    let samplerState: MTLSamplerState
     
     init(device: MTLDevice, metalView: MTKView) {
         self.device = device
