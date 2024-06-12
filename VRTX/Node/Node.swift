@@ -29,7 +29,7 @@ class Node: Identifiable {
         let scaleMatrix = simd_float4x4(scale3D: scale)
         let translate = simd_float4x4(translationBy: translation)
         let rotate = simd_float4x4(rotationAbout: rotationAxis, by: rotationAngle * Float.pi)
-        return modelMatrix * rotate * scaleMatrix * translate
+        return modelMatrix * translate * rotate * scaleMatrix
     }
 }
 
