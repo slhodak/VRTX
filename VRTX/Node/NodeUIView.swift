@@ -17,8 +17,8 @@ struct NodeUIView: View {
             VectorView(name: "Rotation Axis", vector: $node.rotationAxis)
             LabeledSlider(name: "RotationAngle", value: $node.rotationAngle, min: 0, max: 2)
             
-            Text("Model Matrix")
-            Matrix4x4View(mat: $node.currentModelMatrix)
+            Text("Transformed Model Matrix")
+            Matrix4x4View(mat: $node.localTransform)
         }
     }
 }

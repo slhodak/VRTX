@@ -207,7 +207,7 @@ class Renderer: NSObject, MTKViewDelegate {
     }
     
     func drawNodeRecursive(_ node: Node, parentTransform: simd_float4x4, renderEncoder: MTLRenderCommandEncoder) {
-        let modelMatrix = parentTransform * node.currentModelMatrix
+        let modelMatrix = parentTransform * node.localTransform
         var vertexUniforms = VertexUniforms(viewProjectionMatrix: projection.viewProjectionMatrix,
                                             modelMatrix: modelMatrix,
                                             normalMatrix: modelMatrix.normalMatrix)
