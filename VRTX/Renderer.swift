@@ -22,6 +22,11 @@ struct FragmentUniforms {
     var light2 = Light()
 }
 
+struct Light {
+    var worldPosition = simd_float3(0, 0, 0)
+    var color = simd_float3(1, 1, 1)
+}
+
 @Observable
 class Renderer: NSObject, MTKViewDelegate {
     let logger = Logger(subsystem: "com.samhodak.VRTX", category: "Renderer")

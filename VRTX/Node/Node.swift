@@ -2,11 +2,6 @@ import Foundation
 import MetalKit
 import simd
 
-struct Light {
-    var worldPosition = simd_float3(0, 0, 0)
-    var color = simd_float3(1, 1, 1)
-}
-
 @Observable
 class Node: Identifiable {
     let id = UUID()
