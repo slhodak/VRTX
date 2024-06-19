@@ -64,10 +64,14 @@ class Renderer: NSObject, MTKViewDelegate {
         
         super.init()
         
-        let modelNode = loadModel(vertexDescriptor: self.modelVertexDescriptor)!
-        loadTexture(on: modelNode)
-        self.rootNode.children.append(modelNode)
-        let customNode = loadCustomGeometry()
+        if let modelNode = Renderer.loadModel(device: device, vertexDescriptor: self.modelVertexDescriptor) {
+            Renderer.loadTexture(on: modelNode, device: device)
+            self.rootNode.children.append(modelNode)
+        } else {
+            logger.error("Could not extract meshes from Model I/O asset")
+        }
+        
+        let customNode = Renderer.loadCustomGeometry(device: device)
         self.rootNode.children.append(customNode)
         projection.updateProjectionMatrix()
         
@@ -95,7 +99,7 @@ class Renderer: NSObject, MTKViewDelegate {
         return scene
     }
     
-    func loadModel(vertexDescriptor: MDLVertexDescriptor) -> ModelNode? {
+    static func loadModel(device: MTLDevice, vertexDescriptor: MDLVertexDescriptor) -> ModelNode? {
         let modelURL = Bundle.main.url(forResource: "suzanne", withExtension: "obj")!
         let bufferAllocator = MTKMeshBufferAllocator(device: device)
         let asset = MDLAsset(url: modelURL, vertexDescriptor: vertexDescriptor, bufferAllocator: bufferAllocator)
@@ -103,12 +107,11 @@ class Renderer: NSObject, MTKViewDelegate {
             let mesh = try MTKMesh.newMeshes(asset: asset, device: device).metalKitMeshes.first!
             return ModelNode(name: "suzanne", mesh: mesh)
         } catch {
-            logger.error("Could not extract meshes from Model I/O asset")
             return nil
         }
     }
     
-    func loadCustomGeometry() -> CustomNode {
+    static func loadCustomGeometry(device: MTLDevice) -> CustomNode {
         let geometry = Geometry()
         geometry.initVertices()
         geometry.setupVertexBuffer(for: device)
@@ -116,7 +119,7 @@ class Renderer: NSObject, MTKViewDelegate {
         return CustomNode(name: "custom", geometry: geometry)
     }
     
-    func loadTexture(on node: Node) {
+    static func loadTexture(on node: Node, device: MTLDevice) {
         let textureLoader = MTKTextureLoader(device: device)
         let options: [MTKTextureLoader.Option: Any] = [.generateMipmaps: true, .SRGB: true]
         node.material.baseColorTexture = try? textureLoader.newTexture(name: "neon_purple_grid", scaleFactor: 1, bundle: nil, options: options)
