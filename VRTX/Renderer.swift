@@ -30,6 +30,7 @@ struct Light {
 @Observable
 class Renderer: NSObject, MTKViewDelegate {
     let logger = Logger(subsystem: "com.samhodak.VRTX", category: "Renderer")
+    static let logger = Logger(subsystem: "com.samhodak.VRTX", category: "Renderer")
     var view: MTKView
     var device: MTLDevice
     var commandQueue: MTLCommandQueue
@@ -43,7 +44,6 @@ class Renderer: NSObject, MTKViewDelegate {
     //var cameraWorldPosition = simd_float3(0, 0, 2)
     static let aspectRatio: Float = 1.78
     let scene: VScene
-    let rootNode = Node(name: "root")
     var nodes = [Node]()
     
     init(device: MTLDevice, metalView: MTKView) {
@@ -55,7 +55,9 @@ class Renderer: NSObject, MTKViewDelegate {
         self.modelVertexDescriptor = modelVertexDescriptor
         let vertexDescriptor = MTKMetalVertexDescriptorFromModelIO(modelVertexDescriptor)!
         self.vertexDescriptor = vertexDescriptor
-        self.scene = Renderer.buildScene()
+        self.scene = Renderer.buildScene(device: device,
+                                         vertexDescriptor: vertexDescriptor,
+                                         modelVertexDescriptor: modelVertexDescriptor)
         self.pipelineState = Renderer.makePipelineState(device: device,
                                                         view: metalView,
                                                         vertexDescriptor: vertexDescriptor)
@@ -64,15 +66,6 @@ class Renderer: NSObject, MTKViewDelegate {
         
         super.init()
         
-        if let modelNode = Renderer.loadModel(device: device, vertexDescriptor: self.modelVertexDescriptor) {
-            Renderer.loadTexture(on: modelNode, device: device)
-            self.rootNode.children.append(modelNode)
-        } else {
-            logger.error("Could not extract meshes from Model I/O asset")
-        }
-        
-        let customNode = Renderer.loadCustomGeometry(device: device)
-        self.rootNode.children.append(customNode)
         projection.updateProjectionMatrix()
         
         NotificationCenter.default.addObserver(self,
@@ -89,13 +82,24 @@ class Renderer: NSObject, MTKViewDelegate {
         draw()
     }
     
-    static func buildScene() -> VScene {
+    static func buildScene(device: MTLDevice, vertexDescriptor: MTLVertexDescriptor, modelVertexDescriptor: MDLVertexDescriptor) -> VScene {
         let scene = VScene()
         scene.ambientLightColor = simd_float3(0.1, 0.1, 0.1)
         let light0 = Light(worldPosition: simd_float3(5, 5, 0), color: simd_float3(1, 1, 1))
         let light1 = Light(worldPosition: simd_float3(0, 5, 0), color: simd_float3(1, 1, 1))
         let light2 = Light(worldPosition: simd_float3(-5, 5, 0), color: simd_float3(1, 1, 1))
         scene.lights = [light0, light1, light2]
+        
+        if let modelNode = Renderer.loadModel(device: device, vertexDescriptor: modelVertexDescriptor) {
+            Renderer.loadTexture(on: modelNode, device: device)
+            scene.rootNode.children.append(modelNode)
+        } else {
+            Renderer.logger.error("Could not extract meshes from Model I/O asset")
+        }
+        
+        let customNode = Renderer.loadCustomGeometry(device: device)
+        scene.rootNode.children.append(customNode)
+        
         return scene
     }
     
@@ -199,7 +203,7 @@ class Renderer: NSObject, MTKViewDelegate {
         renderEncoder.setFragmentSamplerState(samplerState, index: 0)
         renderEncoder.setDepthStencilState(depthStencilState)
         renderEncoder.setRenderPipelineState(pipelineState)
-        drawNodeRecursive(self.rootNode,
+        drawNodeRecursive(scene.rootNode,
                           parentTransform: matrix_identity_float4x4,
                           renderEncoder: renderEncoder)
         renderEncoder.endEncoding()

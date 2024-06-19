@@ -61,7 +61,7 @@ struct NodesView: View {
     var body: some View {
         VStack(alignment: .leading) {
             Text("Nodes").bold()
-            ForEach(renderer.rootNode.children) { node in
+            ForEach(renderer.scene.rootNode.children) { node in
                 NodeUIView(node: node)
                 Divider()
             }

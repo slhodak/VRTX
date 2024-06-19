@@ -15,7 +15,7 @@ struct ContentView: View {
             
             VStack {
                 let metalViewHeight = 500 / CGFloat(Renderer.aspectRatio)
-                MaterialUIView(material: renderer.rootNode.children.first!.material)
+                MaterialUIView(material: renderer.scene.rootNode.children.first!.material)
                     .frame(height: (totalHeight - metalViewHeight) / 2)
                 MetalView(metalView: metalView)
                     .frame(height: metalViewHeight)
