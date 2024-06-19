@@ -37,11 +37,10 @@ class Renderer: NSObject, MTKViewDelegate {
     var modelVertexDescriptor: MDLVertexDescriptor
     var vertexDescriptor: MTLVertexDescriptor
     let depthStencilState: MTLDepthStencilState
-    var baseColorTexture: MTLTexture?
     let samplerState: MTLSamplerState
     var projection: Projection
     
-    var cameraWorldPosition = simd_float3(0, 0, 2)
+    //var cameraWorldPosition = simd_float3(0, 0, 2)
     static let aspectRatio: Float = 1.78
     let scene: VScene
     let rootNode = Node(name: "root")
@@ -65,8 +64,8 @@ class Renderer: NSObject, MTKViewDelegate {
         
         super.init()
         
-        loadTexture()
         let modelNode = loadModel(vertexDescriptor: self.modelVertexDescriptor)!
+        loadTexture(on: modelNode)
         self.rootNode.children.append(modelNode)
         let customNode = loadCustomGeometry()
         self.rootNode.children.append(customNode)
@@ -117,10 +116,10 @@ class Renderer: NSObject, MTKViewDelegate {
         return CustomNode(name: "custom", geometry: geometry)
     }
     
-    func loadTexture() {
+    func loadTexture(on node: Node) {
         let textureLoader = MTKTextureLoader(device: device)
         let options: [MTKTextureLoader.Option: Any] = [.generateMipmaps: true, .SRGB: true]
-        baseColorTexture = try? textureLoader.newTexture(name: "neon_purple_grid", scaleFactor: 1, bundle: nil, options: options)
+        node.material.baseColorTexture = try? textureLoader.newTexture(name: "neon_purple_grid", scaleFactor: 1, bundle: nil, options: options)
     }
     
     static func getModelVertexDescriptor() -> MDLVertexDescriptor {
@@ -194,7 +193,6 @@ class Renderer: NSObject, MTKViewDelegate {
             return
         }
         
-        renderEncoder.setFragmentTexture(baseColorTexture, index: 0)
         renderEncoder.setFragmentSamplerState(samplerState, index: 0)
         renderEncoder.setDepthStencilState(depthStencilState)
         renderEncoder.setRenderPipelineState(pipelineState)
@@ -221,7 +219,9 @@ class Renderer: NSObject, MTKViewDelegate {
                                                 light1: scene.lights[1],
                                                 light2: scene.lights[2])
         renderEncoder.setFragmentBytes(&fragmentUniforms, length: MemoryLayout<FragmentUniforms>.size, index: 0)
-        renderEncoder.setFragmentTexture(baseColorTexture, index: 0)
+        if let baseColorTexture = node.material.baseColorTexture {
+            renderEncoder.setFragmentTexture(node.material.baseColorTexture, index: 0)
+        }
         
         if let node = node as? ModelNode {
             let vertexBuffer = node.mesh.vertexBuffers.first!

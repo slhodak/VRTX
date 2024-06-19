@@ -54,13 +54,17 @@ fragment float4 fragment_main(VertexOut frag_in [[stage_in]],
                               sampler baseColorSampler [[sampler(0)]]) {
     float3 baseColor = baseColorTexture.sample(baseColorSampler, frag_in.texCoords).rgb;
     float3 specularColor = uniforms.specularColor;
+    // What is N? Normal of the fragment in world space
     float3 N = normalize(frag_in.worldNormal);
+    // What is V? Direction from the fragment to the camera
     float3 V = normalize(worldCameraPosition - frag_in.worldPosition);
     
     float3 finalColor(0, 0, 0);
     for (int i = 0; i < LightCount; i++) {
+        // What is L? Direction from the fragment to the light
         float3 L = normalize(uniforms.lights[i].worldPosition - frag_in.worldPosition);
         float3 diffuseIntensity = saturate(dot(N, L));
+        // What is H? "The half-vector between the light direction and view direction"
         float3 H = normalize(L + V);
         float specularBase = saturate(dot(N, H));
         float specularIntensity = powr(specularBase, uniforms.specularPower);
