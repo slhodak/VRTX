@@ -226,9 +226,7 @@ class Renderer: NSObject, MTKViewDelegate {
                                                 light1: scene.lights[1],
                                                 light2: scene.lights[2])
         renderEncoder.setFragmentBytes(&fragmentUniforms, length: MemoryLayout<FragmentUniforms>.size, index: 0)
-        if let baseColorTexture = node.material.baseColorTexture {
-            renderEncoder.setFragmentTexture(node.material.baseColorTexture, index: 0)
-        }
+        renderEncoder.setFragmentTexture(node.material.baseColorTexture, index: 0)
         
         if let node = node as? ModelNode {
             let vertexBuffer = node.mesh.vertexBuffers.first!
